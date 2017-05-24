@@ -8,7 +8,7 @@ import com.stata.sfi.*;
 
 public class WIDDownloader {
 	
-	private static String apiKey = "<private API key here>";
+	private static String apiKey = "<API key>";
 	
 	private static String apiCountriesAvailableVariables = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-available-variables";
 	private static String apiCountriesVariablesDownload  = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-variables-dl";
