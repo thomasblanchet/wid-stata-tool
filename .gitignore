@@ -21,8 +21,9 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+
 # File containing private API key
 api-key.txt
 
-# Stata interface
+# Stata Java interface
 java/com/stata
