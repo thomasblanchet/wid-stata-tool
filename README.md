@@ -1,4 +1,4 @@
-# WID.world Stata tool
+# WID.world Stata command
 
 This is the official Stata command of the World Wealth and Income Database (WID.world). It lets users download data directly from WID.world into Stata.
 
