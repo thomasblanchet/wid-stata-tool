@@ -27,3 +27,5 @@ api-key.txt
 
 # Stata Java interface
 java/com/stata
+
+example.do
