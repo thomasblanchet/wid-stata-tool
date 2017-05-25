@@ -136,7 +136,7 @@ Just typing {cmd: wid, clear} will download the entire database, which may takes
 {pstd}
 Plot wealth inequality share in France:
 
-        {cmd:wid, indicators(shweal) areas(FR) perc(p90p100 p99p100) clear}
+        {cmd:wid, indicators(shweal) areas(FR) perc(p90p100 p99p100) ages(992) pop(j) clear}
     
         {cmd:// Reshape and plot}
         {cmd:reshape wide value, i(year) j(percentile) string}
