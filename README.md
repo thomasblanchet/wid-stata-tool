@@ -9,14 +9,14 @@ Users should install the command directly from SSC [coming soon].
 ## Usage
 
 The documentation of the command is available after installation using:
-```
+```stata
 help wid
 ```
 
 ## Examples
 
 Plot the long run evolution wealth inequality in France:
-```
+```stata
 wid, indicators(shweal) areas(FR) perc(p90p100 p99p100) ages(992) pop(j) clear
 
 // Reshape and plot
@@ -31,7 +31,7 @@ graph twoway line value* year, title("Wealth inequality in France") ///
 ```
 
 Plot the evolution of the pre-tax national income of the bottom 50% of the population in China, France and the United States since 1978 (in log scale):
-```
+```stata
 // Download and store the 2015 USD PPP exchange rate
 wid, indicators(xlcusp) areas(FR US CN) year(2015) clear
 rename value ppp
@@ -58,7 +58,7 @@ graph twoway line value* year, yscale(log) ylabel(1 2 5 10 20) ///
 ```
 
 Plot the long-run evolution of average net national income per adult in France, Germany, the United Kingdom and the United States (in log scale):
-```
+```stata
 // Download and store the 2015 USD PPP exchange rate
 wid, indicators(xlcusp) areas(FR US DE GB) year(2015) clear
 rename value ppp
