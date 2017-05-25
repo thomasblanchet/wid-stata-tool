@@ -285,5 +285,8 @@ program wid
 		order country variable percentile year value shortname shortdes pop age source method
 	}
 	
+	// Saves memory
+	quietly compress
+	
 	sort country variable percentile year
 end
