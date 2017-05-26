@@ -16,6 +16,15 @@ program wid
 	}
 	
 	// ---------------------------------------------------------------------- //
+	// Check the user specified at least some countries and/or indicators
+	// ---------------------------------------------------------------------- //
+	
+	if (inlist("`indicators'", "", "_all") & inlist("`areas'", "", "_all")) {
+		display as error "you need to specify some indicators, some areas, or both"
+		exit 198
+	}
+	
+	// ---------------------------------------------------------------------- //
 	// Parse the arguments
 	// ---------------------------------------------------------------------- //
 	

@@ -35,7 +35,9 @@
 {title:Options}
 
 {phang}
-{opt ind:icators(list of 6-letter codes|_all)} specify indicators to retrieve. Default is {it:_all} for all indicators.
+{opt ind:icators(list of 6-letter codes|_all)} specify indicators to retrieve.
+Default is {it:_all} for all indicators.
+You have to specify this option if you select all areas.
 Indicators are 6-letter codes that correspond to a given series type for a given income or wealth concept.
 The first letter correspond to the type of series.
 Some of the most common possibilities include:
@@ -69,7 +71,9 @@ Some of the most common possibilities include:
 {p 8 8}For example, {it:sfiinc} correspond to the share of fiscal income, {it:ahweal} correspond to average personal wealth.{p_end}
 
 {phang}
-{opt ar:eas(list of area codes|_all)} specify areas for which to retrieve data. Default is {it:_all} for all areas.
+{opt ar:eas(list of area codes|_all)} specify areas for which to retrieve data.
+Default is {it:_all} for all areas.
+You have to specify this option if you select all indicators.
 Countries and world regions are coded using 2-letter ISO codes.
 Country subregions are coded as {it:XX-YY} where {it:XX} is the country 2-letter code.
 See {help wid_list_area_codes:list of area codes} for the complete list of area codes.
@@ -124,11 +128,16 @@ Some of the most common possibilities include:
 
 {pstd}
 Data is presented in long format (one observation per value).
-All monetary amounts are in constant 2015 local currency.
+
+{pstd}
+All monetary amounts are in constant 2015 local currency for countries and country subregions.
+Monetary amounts for world regions are in 2015 EUR PPP.
 You can access the price index using the indicator {it:inyixx}, the PPP exchange rates using {it:xlcusp} (USD), {it:xlceup} (EUR), {it:xlcyup} (CNY), and the market exchange rates using {it:xlcusx} (USD), {it:xlceux} (EUR), {it:xlcyux} (CNY).
 
 {pstd}
-Just typing {cmd: wid, clear} will download the entire database, which may takes a very long time. We recommend the indicators you want to download in advance.
+Shares and wealth income ratios are given as a fraction of 1.
+That is, a top 1% share of 10% is given as 0.2.
+A wealth/income ratio of 300% is given as 3.
 
 {marker examples}{...}
 {title:Examples}
