@@ -24,7 +24,7 @@ public class WIDDownloader {
             String charset = java.nio.charset.StandardCharsets.UTF_8.name();
             query = String.format("countries=%s&variables=all", URLEncoder.encode(countries, charset));
         } catch (Exception e) {
-            SFIToolkit.error("the 'areas' argument contains invalid characters\n");
+            SFIToolkit.error("\nthe 'areas' argument contains invalid characters\n");
             return(198);
         }
 
@@ -41,7 +41,7 @@ public class WIDDownloader {
             InputStream response = connection.getInputStream();
             scanner = new Scanner(response);
         } catch (Exception e) {
-            SFIToolkit.error("could not access the online WID.world database; please check your internet connection\n");
+            SFIToolkit.error("\ncould not access the online WID.world database; please check your internet connection\n");
             return(677);
         }
 
@@ -101,7 +101,7 @@ public class WIDDownloader {
                 Data.storeStr(variablePopIndex,        i + 1, listPop.get(i));
             }
         } catch (Exception e) {
-            SFIToolkit.error("server response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
+            SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
             return(674);
         }
         
@@ -124,7 +124,7 @@ public class WIDDownloader {
                 URLEncoder.encode(years, charset)
             );
         } catch (Exception e) {
-            SFIToolkit.error("the arguments contains invalid characters\n");
+            SFIToolkit.error("\nthe arguments contains invalid characters\n");
             return(198);
         }
 
@@ -141,7 +141,7 @@ public class WIDDownloader {
             InputStream response = connection.getInputStream();
             scanner = new Scanner(response);
         } catch (Exception e) {
-            SFIToolkit.error("could not access the online WID.world database; please check your internet connection\n");
+            SFIToolkit.error("\ncould not access the online WID.world database; please check your internet connection\n");
             return(677);
         }
 
@@ -201,7 +201,7 @@ public class WIDDownloader {
                 Data.storeNum(variableValueIndex,      i + 1, listValue.get(i));
             }
         } catch (Exception e) {
-            SFIToolkit.error("server response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
+            SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
             return(674);
         }
         
@@ -222,7 +222,7 @@ public class WIDDownloader {
                 URLEncoder.encode(variables, charset)
             );
         } catch (Exception e) {
-            SFIToolkit.error("the 'areas' argument contains invalid characters\n");
+            SFIToolkit.error("\nthe 'areas' argument contains invalid characters\n");
             return(198);
         }
 
@@ -239,7 +239,7 @@ public class WIDDownloader {
             InputStream response = connection.getInputStream();
             scanner = new Scanner(response);
         } catch (Exception e) {
-            SFIToolkit.error("could not access the online WID.world database; please check your internet connection\n");
+            SFIToolkit.error("\ncould not access the online WID.world database; please check your internet connection\n");
             return(677);
         }
 
@@ -342,7 +342,7 @@ public class WIDDownloader {
                 Data.storeStr(variableMethodIndex,    i + 1, listMethod.get(i));
             }
         } catch (Exception e) {
-            SFIToolkit.error("server response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
+            SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
             return(674);
         }
         

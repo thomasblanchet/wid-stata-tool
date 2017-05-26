@@ -16,7 +16,7 @@
 {synopthdr}
 {synoptline}
 {synopt:{opt ind:icators(list of 6-letter codes|_all)}}codes names of the indicators in the database; default is {it:_all} for all indicators; see {help wid##options:options} for details{p_end}
-{synopt:{opt ar:eas(list of area codes|_all)}}area code names of the database; {it:XX} for country/regions, {it:XX-YY} for subregions; default is {it:_all} for all areas; see {help wid##options:options} for details{p_end}
+{synopt:{opt ar:eas(list of area codes|_all)}}area code names of the database; {it:XX} for countries/regions, {it:XX-YY} for subregions; default is {it:_all} for all areas; see {help wid##options:options} for details{p_end}
 {synopt:{opth y:ears(numlist)}}years; default is all{p_end}
 {synopt:{opt p:erc(list of percentiles|_all)}}list of percentiles; either {it:pXXpYY} or {it:pXX}; default is {it:all_} for all percentiles; see {help wid##options:options} for details{p_end}
 {synopt:{opt ag:es(list of age codes|_all)}}age category codes in the database; {it:999} for all ages, {it:992} for adults; default is {it:_all} for all age categories; see {help wid##options:options} for more{p_end}
@@ -38,7 +38,7 @@
 {opt ind:icators(list of 6-letter codes|_all)} specify indicators to retrieve.
 Default is {it:_all} for all indicators.
 You have to specify this option if you select all areas.
-Indicators are 6-letter codes that correspond to a given series type for a given income or wealth concept.
+Indicators are 6-letter codes that corresponds to a given series type for a given income or wealth concept.
 The first letter correspond to the type of series.
 Some of the most common possibilities include:
 
@@ -68,7 +68,7 @@ Some of the most common possibilities include:
 {space 14}See {help wid_list_concepts:list of concepts} for the complete list.
 {p2colreset}{...}
 
-{p 8 8}For example, {it:sfiinc} correspond to the share of fiscal income, {it:ahweal} correspond to average personal wealth.{p_end}
+{p 8 8}For example, {it:sfiinc} corresponds to the share of fiscal income, {it:ahweal} corresponds to average personal wealth.{p_end}
 
 {phang}
 {opt ar:eas(list of area codes|_all)} specify areas for which to retrieve data.
@@ -135,7 +135,7 @@ Monetary amounts for world regions are in 2015 EUR PPP.
 You can access the price index using the indicator {it:inyixx}, the PPP exchange rates using {it:xlcusp} (USD), {it:xlceup} (EUR), {it:xlcyup} (CNY), and the market exchange rates using {it:xlcusx} (USD), {it:xlceux} (EUR), {it:xlcyux} (CNY).
 
 {pstd}
-Shares and wealth income ratios are given as a fraction of 1.
+Shares and wealth/income ratios are given as a fraction of 1.
 That is, a top 1% share of 10% is given as 0.2.
 A wealth/income ratio of 300% is given as 3.
 
