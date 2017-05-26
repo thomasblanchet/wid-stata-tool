@@ -283,12 +283,12 @@ public class WIDDownloader {
             }
     
             // Maximum size for string variables
-            int shortNameLength = 0;
-            int shortDesLength  = 0;
-            int popLength       = 0;
-            int ageLength       = 0;
-            int sourceLength    = 0;
-            int methodLength    = 0;
+            int shortNameLength = 1;
+            int shortDesLength  = 1;
+            int popLength       = 1;
+            int ageLength       = 1;
+            int sourceLength    = 1;
+            int methodLength    = 1;
             for (int i = 0; i < lineIndex; i++) {
                 if (shortNameLength < listShortName.get(i).length()) {
                     shortNameLength = listShortName.get(i).length();
