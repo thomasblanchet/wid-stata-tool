@@ -1,8 +1,10 @@
-*! wid_example1 v0.0.0.9000 Thomas Blanchet 25may2017
+*! wid_example1 v1.0 Thomas Blanchet 25may2017
 
 // Plot the long run evolution wealth inequality in France
 
 program wid_example1
+	version 13
+
 	preserve
 
 	wid, indicators(shweal) areas(FR) perc(p90p100 p99p100) ages(992) pop(j) clear

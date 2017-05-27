@@ -1,9 +1,11 @@
-*! wid_example3 v0.0.0.9000 Thomas Blanchet 25may2017
+*! wid_example3 v1.0 Thomas Blanchet 25may2017
 
 // Plot the long run evolution of average net national income per adult
 // in US, FR, DE and GB, in log scale
 
 program wid_example3
+	version 13
+
 	preserve
 
 	// Download and store the 2015 USD PPP exchange rate

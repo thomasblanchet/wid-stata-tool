@@ -1,4 +1,4 @@
-*! wid v0.0.0.9000 Thomas Blanchet 25may2017
+*! wid v1.0 Thomas Blanchet 25may2017
 
 program wid
 	version 13
