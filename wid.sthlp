@@ -185,7 +185,7 @@ Plot the evolution of the pre-tax national income of the bottom 50% of the popul
         {cmd:label variable valueCN "China"}
         
         {cmd:graph twoway line value* year, yscale(log) ylabel(1 2 5 10 20) ///}
-        {cmd:    ytitle("2015 PPP USD (000’s)") ///}
+        {cmd:    ytitle("2015 PPP USD (000's)") ///}
         {cmd:    title("Average pre-tax national income of the bottom 50%") subtitle("equal-split adults") ///}
         {cmd:    note("Source: WID.world") legend(rows(1))}
         
@@ -216,7 +216,7 @@ Plot the long-run evolution of average net national income per adult in France, 
         {cmd:label variable valueGB "United Kingdom"}
         
         {cmd:graph twoway line value* year, yscale(log) ///}
-        {cmd:    ytitle("2015 PPP USD (000’s)") ylabel(2 5 10 20 50 100) ///}
+        {cmd:    ytitle("2015 PPP USD (000's)") ylabel(2 5 10 20 50 100) ///}
         {cmd:    title("Average net national income") subtitle("per adult") ///}
         {cmd:    note("Source: WID.world")}
 
