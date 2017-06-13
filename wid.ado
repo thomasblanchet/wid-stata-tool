@@ -1,4 +1,4 @@
-*! wid v1.0 Thomas Blanchet 25may2017
+*! wid v1.0.1 Thomas Blanchet 13jun2017
 
 program wid
 	version 13
@@ -242,12 +242,19 @@ program wid
 		}
 		quietly save "`output_data'", replace
 	}
+	display as text "DONE"
+		
+	quietly count
+	if (r(N) == 0) {
+		display as text "(no data matching you selection)"
+		exit 0
+	}
+		
 	quietly duplicates drop country indicator percentile year, force
 	generate variable = substr(indicator, 1, 6) + substr(indicator, 8, 3) + substr(indicator, 12, 1)
 	drop indicator
 	order country variable percentile year value
 	quietly save "`output_data'", replace
-	display as text "DONE"
 	
 	// ---------------------------------------------------------------------- //
 	// Retrieve the metadata, if required

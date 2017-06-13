@@ -61,7 +61,7 @@ public class WIDDownloader {
             Matcher matcher;
     
             // The final double quote marks the end of the file
-            long lineIndex = 0;
+            int lineIndex = 0;
             String line = scanner.next();
             while (!line.equals("\"")) {
                 lineIndex++;
@@ -85,7 +85,7 @@ public class WIDDownloader {
             Data.addVarInt("age");
             Data.addVarStr("pop", 1);
     
-            Data.setObsTotal(lineIndex);
+            Data.setObsCount(lineIndex);
     
             int variableVariableIndex   = Data.getVarIndex("variable");
             int variableCountryIndex    = Data.getVarIndex("country");
@@ -161,7 +161,7 @@ public class WIDDownloader {
             Matcher matcher;
     
             // The final double quote marks the end of the file
-            long lineIndex = 0;
+            int lineIndex = 0;
             String line = scanner.next();
             while (!line.equals("\"")) {
                 lineIndex++;
@@ -185,7 +185,7 @@ public class WIDDownloader {
             Data.addVarInt("year");
             Data.addVarDouble("value");
     
-            Data.setObsTotal(lineIndex);
+            Data.setObsCount(lineIndex);
     
             int variableCountryIndex    = Data.getVarIndex("country");
             int variableIndicatorIndex  = Data.getVarIndex("indicator");
@@ -262,7 +262,7 @@ public class WIDDownloader {
             Matcher matcher;
     
             // The final double quote marks the end of the file
-            long lineIndex = 0;
+            int lineIndex = 0;
             String line = scanner.next();
             while (!line.equals("\"")) {
                 lineIndex++;
@@ -320,7 +320,7 @@ public class WIDDownloader {
             Data.addVarStr("source", sourceLength);
             Data.addVarStr("method", methodLength);
     
-            Data.setObsTotal(lineIndex);
+            Data.setObsCount(lineIndex);
     
             int variableVariableIndex  = Data.getVarIndex("variable");
             int variableShortNameIndex = Data.getVarIndex("shortname");

@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.0.0.9000  25may2017}{...}
+{* *! version 1.0.1  13jun2017}{...}
 {title:Title}
 
 {phang}
@@ -141,6 +141,9 @@ A wealth/income ratio of 300% is given as 3.
 
 {marker examples}{...}
 {title:Examples}
+
+{pstd}
+The following examples only illustrate graphing, and do not leave any data in memory.
 
 {pstd}
 Plot wealth inequality share in France:
