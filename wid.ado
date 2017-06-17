@@ -1,4 +1,4 @@
-*! wid v1.0.1 Thomas Blanchet 13jun2017
+*! wid v1.0.2 Thomas Blanchet 15jun2017
 
 program wid
 	version 13
@@ -22,6 +22,15 @@ program wid
 	if (inlist("`indicators'", "", "_all") & inlist("`areas'", "", "_all")) {
 		display as error "you need to specify some indicators, some areas, or both"
 		exit 198
+	}
+	
+	// ---------------------------------------------------------------------- //
+	// Starting with Stata 15, we have to specify the location of the JAR
+	// file
+	// ---------------------------------------------------------------------- //
+	capture version 15
+	if (_rc != 9) {
+		local jar_name "jars(wid.jar)"
 	}
 	
 	// ---------------------------------------------------------------------- //
@@ -68,7 +77,7 @@ program wid
 	display as text "* Get variables associated to your selection...",, _continue
 	
 	clear
-	javacall com.wid.WIDDownloader importCountriesAvailableVariables, args("`areas'")
+	javacall com.wid.WIDDownloader importCountriesAvailableVariables, args("`areas'") `jar_name'
 	
 	// Check if there are some results
 	quietly count
@@ -235,7 +244,7 @@ program wid
 		quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 		
 		clear
-		javacall com.wid.WIDDownloader importCountriesVariablesDownload, args("`areas_list'" "`variables_list'" "`years'")
+		javacall com.wid.WIDDownloader importCountriesVariablesDownload, args("`areas_list'" "`variables_list'" "`years'") `jar_name'
 		
 		if (`c' != 0) {
 			quietly append using "`output_data'"
@@ -279,7 +288,7 @@ program wid
 			quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 			
 			clear
-			javacall com.wid.WIDDownloader importCountriesVariablesMetadata, args("`areas_list'" "`variables_list'")
+			javacall com.wid.WIDDownloader importCountriesVariablesMetadata, args("`areas_list'" "`variables_list'") `jar_name'
 		
 			keep variable shortname shortdes pop age country source method
 			quietly tostring variable shortname shortdes pop age country source method, replace

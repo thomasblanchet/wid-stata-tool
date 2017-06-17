@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.0.1  13jun2017}{...}
+{* *! version 1.0.2  15jun2017}{...}
 {title:Title}
 
 {phang}
@@ -130,8 +130,8 @@ Some of the most common possibilities include:
 Data is presented in long format (one observation per value).
 
 {pstd}
-All monetary amounts are in constant 2015 local currency for countries and country subregions.
-Monetary amounts for world regions are in 2015 EUR PPP.
+All monetary amounts are in constant 2016 local currency for countries and country subregions.
+Monetary amounts for world regions are in 2016 EUR PPP.
 You can access the price index using the indicator {it:inyixx}, the PPP exchange rates using {it:xlcusp} (USD), {it:xlceup} (EUR), {it:xlcyup} (CNY), and the market exchange rates using {it:xlcusx} (USD), {it:xlceux} (EUR), {it:xlcyux} (CNY).
 
 {pstd}
@@ -165,16 +165,16 @@ Plot wealth inequality share in France:
 {pstd}
 Plot the evolution of the pre-tax national income of the bottom 50% of the population in China, France and the United States since 1978 (in log scale):
 
-        {cmd:// Download and store the 2015 USD PPP exchange rate}
-        {cmd:wid, indicators(xlcusp) areas(FR US CN) year(2015) clear}
+        {cmd:// Download and store the 2016 USD PPP exchange rate}
+        {cmd:wid, indicators(xlcusp) areas(FR US CN) year(2016) clear}
         {cmd:rename value ppp}
         {cmd:tempfile ppp}
         {cmd:save "`ppp'"}
         
-        {cmd:wid, indicators(aptinc) areas(FR US CN) perc(p0p50) year(1978/2015) ages(992) pop(j) clear}
+        {cmd:wid, indicators(aptinc) areas(FR US CN) perc(p0p50) year(1978/2016) ages(992) pop(j) clear}
         {cmd:merge n:1 country using "`ppp'", nogenerate}
         
-        {cmd:// Convert to 2015 USD PPP (thousands)}
+        {cmd:// Convert to 2016 USD PPP (thousands)}
         {cmd:replace value = value/ppp/1000}
         
         {cmd:// Reshape and plot}
@@ -185,7 +185,7 @@ Plot the evolution of the pre-tax national income of the bottom 50% of the popul
         {cmd:label variable valueCN "China"}
         
         {cmd:graph twoway line value* year, yscale(log) ylabel(1 2 5 10 20) ///}
-        {cmd:    ytitle("2015 PPP USD (000's)") ///}
+        {cmd:    ytitle("2016 PPP USD (000's)") ///}
         {cmd:    title("Average pre-tax national income of the bottom 50%") subtitle("equal-split adults") ///}
         {cmd:    note("Source: WID.world") legend(rows(1))}
         
@@ -194,17 +194,17 @@ Plot the evolution of the pre-tax national income of the bottom 50% of the popul
 {pstd}
 Plot the long-run evolution of average net national income per adult in France, Germany, the United Kingdom and the United States (in log scale):
 
-        {cmd:// Download and store the 2015 USD PPP exchange rate}
-        {cmd:wid, indicators(xlcusp) areas(FR US DE GB) year(2015) clear}
+        {cmd:// Download and store the 2016 USD PPP exchange rate}
+        {cmd:wid, indicators(xlcusp) areas(FR US DE GB) year(2016) clear}
         {cmd:rename value ppp}
         {cmd:tempfile ppp}
         {cmd:save "`ppp'"}
         
-        {cmd:// Download net national income in constant 2015 local currency}
+        {cmd:// Download net national income in constant 2016 local currency}
         {cmd:wid, indicators(anninc) areas(FR US DE GB) age(992) clear}
         {cmd:merge n:1 country using "`ppp'", nogenerate}
         
-        {cmd:// Convert to 2015 USD PPP (thousands)}
+        {cmd:// Convert to 2016 USD PPP (thousands)}
         {cmd:replace value = value/ppp/1000}
         
         {cmd:// Reshape and plot}
@@ -216,7 +216,7 @@ Plot the long-run evolution of average net national income per adult in France, 
         {cmd:label variable valueGB "United Kingdom"}
         
         {cmd:graph twoway line value* year, yscale(log) ///}
-        {cmd:    ytitle("2015 PPP USD (000's)") ylabel(2 5 10 20 50 100) ///}
+        {cmd:    ytitle("2016 PPP USD (000's)") ylabel(2 5 10 20 50 100) ///}
         {cmd:    title("Average net national income") subtitle("per adult") ///}
         {cmd:    note("Source: WID.world")}
 

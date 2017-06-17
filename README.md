@@ -4,7 +4,10 @@ This is the official Stata command of the World Wealth and Income Database (WID.
 
 ## Installation
 
-Users should install the command directly from SSC [coming soon].
+Users should install the command directly from SSC:
+```stata
+ssc install wid
+```
 
 ## Usage
 
