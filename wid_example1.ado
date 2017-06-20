@@ -1,4 +1,4 @@
-*! wid_example1 v1.0.2 Thomas Blanchet 15jun2017
+*! wid_example1 v1.0.2 Thomas Blanchet 20jun2017
 
 // Plot the long run evolution wealth inequality in France
 
