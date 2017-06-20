@@ -25,15 +25,6 @@ program wid
 	}
 	
 	// ---------------------------------------------------------------------- //
-	// Starting with Stata 15, we have to specify the location of the JAR
-	// file
-	// ---------------------------------------------------------------------- //
-	capture version 15
-	if (_rc != 9) {
-		local jar_name "jars(wid.jar)"
-	}
-	
-	// ---------------------------------------------------------------------- //
 	// Parse the arguments
 	// ---------------------------------------------------------------------- //
 	
@@ -77,7 +68,7 @@ program wid
 	display as text "* Get variables associated to your selection...",, _continue
 	
 	clear
-	javacall com.wid.WIDDownloader importCountriesAvailableVariables, args("`areas'") `jar_name'
+	javacall com.wid.WIDDownloader importCountriesAvailableVariables, args("`areas'")
 	
 	// Check if there are some results
 	quietly count
@@ -244,7 +235,7 @@ program wid
 		quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 		
 		clear
-		javacall com.wid.WIDDownloader importCountriesVariablesDownload, args("`areas_list'" "`variables_list'" "`years'") `jar_name'
+		javacall com.wid.WIDDownloader importCountriesVariablesDownload, args("`areas_list'" "`variables_list'" "`years'")
 		
 		if (`c' != 0) {
 			quietly append using "`output_data'"
@@ -288,7 +279,7 @@ program wid
 			quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 			
 			clear
-			javacall com.wid.WIDDownloader importCountriesVariablesMetadata, args("`areas_list'" "`variables_list'") `jar_name'
+			javacall com.wid.WIDDownloader importCountriesVariablesMetadata, args("`areas_list'" "`variables_list'")
 		
 			keep variable shortname shortdes pop age country source method
 			quietly tostring variable shortname shortdes pop age country source method, replace

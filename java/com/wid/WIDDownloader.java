@@ -14,7 +14,7 @@ public class WIDDownloader {
     private static String apiCountriesVariablesDownload  = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-variables-dl";
     private static String apiCountriesVariablesMetadata  = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-variables-metadata";
 
-    static int importCountriesAvailableVariables(String[] args) {
+    public static int importCountriesAvailableVariables(String[] args) {
         // Retrieve the arguments of the query
         String countries = args[0];
 
@@ -108,7 +108,7 @@ public class WIDDownloader {
         return(0);
     }
 
-    static int importCountriesVariablesDownload(String[] args) {
+    public static int importCountriesVariablesDownload(String[] args) {
         // Retrieve the arguments of the query
         String countries = args[0];
         String variables = args[1];
@@ -208,7 +208,7 @@ public class WIDDownloader {
         return(0);
     }
 
-    static int importCountriesVariablesMetadata(String[] args) {
+    public static int importCountriesVariablesMetadata(String[] args) {
         // Retrieve the arguments of the query
         String countries = args[0];
         String variables = args[1];

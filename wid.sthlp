@@ -136,7 +136,7 @@ You can access the price index using the indicator {it:inyixx}, the PPP exchange
 
 {pstd}
 Shares and wealth/income ratios are given as a fraction of 1.
-That is, a top 1% share of 10% is given as 0.2.
+That is, a top 1% share of 20% is given as 0.2.
 A wealth/income ratio of 300% is given as 3.
 
 {marker examples}{...}

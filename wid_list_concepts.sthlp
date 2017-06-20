@@ -7,7 +7,7 @@
 
 {title:Content}
 
-{space 4}Concepts are divided in six categories:
+{space 4}Concepts are divided in seven categories:
 {space 8}1) {help wid_list_concepts##macro_income:macro income}
 {space 8}2) {help wid_list_concepts##distributed_income:distributed income}
 {space 8}3) {help wid_list_concepts##macro_wealth:macro wealth}
