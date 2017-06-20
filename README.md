@@ -35,16 +35,16 @@ graph twoway line value* year, title("Wealth inequality in France") ///
 
 Plot the evolution of the pre-tax national income of the bottom 50% of the population in China, France and the United States since 1978 (in log scale):
 ```stata
-// Download and store the 2015 USD PPP exchange rate
-wid, indicators(xlcusp) areas(FR US CN) year(2015) clear
+// Download and store the 2016 USD PPP exchange rate
+wid, indicators(xlcusp) areas(FR US CN) year(2016) clear
 rename value ppp
 tempfile ppp
 save "`ppp'"
 
-wid, indicators(aptinc) areas(FR US CN) perc(p0p50) year(1978/2015) ages(992) pop(j) clear
+wid, indicators(aptinc) areas(FR US CN) perc(p0p50) year(1978/2016) ages(992) pop(j) clear
 merge n:1 country using "`ppp'", nogenerate
 
-// Convert to 2015 USD PPP (thousands)
+// Convert to 2016 USD PPP (thousands)
 replace value = value/ppp/1000
 
 // Reshape and plot
@@ -55,24 +55,24 @@ label variable valueUS "United States"
 label variable valueCN "China"
 
 graph twoway line value* year, yscale(log) ylabel(1 2 5 10 20) ///
-	ytitle("2015 PPP USD (000’s)") ///
+	ytitle("2016 PPP USD (000's)") ///
 	title("Average pre-tax national income of the bottom 50%") subtitle("equal-split adults") ///
 	note("Source: WID.world") legend(rows(1))
 ```
 
 Plot the long-run evolution of average net national income per adult in France, Germany, the United Kingdom and the United States (in log scale):
 ```stata
-// Download and store the 2015 USD PPP exchange rate
-wid, indicators(xlcusp) areas(FR US DE GB) year(2015) clear
+// Download and store the 2016 USD PPP exchange rate
+wid, indicators(xlcusp) areas(FR US DE GB) year(2016) clear
 rename value ppp
 tempfile ppp
 save "`ppp'"
 
-// Download net national income in constant 2015 local currency
+// Download net national income in constant 2016 local currency
 wid, indicators(anninc) areas(FR US DE GB) age(992) clear
 merge n:1 country using "`ppp'", nogenerate
 
-// Convert to 2015 USD PPP (thousands)
+// Convert to 2016 USD PPP (thousands)
 replace value = value/ppp/1000
 
 // Reshape and plot
@@ -84,7 +84,7 @@ label variable valueDE "Germany"
 label variable valueGB "United Kingdom"
 
 graph twoway line value* year, yscale(log) ///
-	ytitle("2015 PPP USD (000’s)") ylabel(2 5 10 20 50 100) ///
+	ytitle("2016 PPP USD (000's)") ylabel(2 5 10 20 50 100) ///
 	title("Average net national income") subtitle("per adult") ///
 	note("Source: WID.world")
 ```
