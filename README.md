@@ -29,7 +29,7 @@ label variable valuep99p100 "Top 1% share"
 
 graph twoway line value* year, title("Wealth inequality in France") ///
 	ylabel(0.2 "20%" 0.4 "40%" 0.6 "60%" 0.8 "80%") ///
-	subtitle("equal-spit adults") ///
+	subtitle("equal-split adults") ///
 	note("Source: WID.world")
 ```
 ![alt text](wid_example1.png)
