@@ -32,6 +32,7 @@ graph twoway line value* year, title("Wealth inequality in France") ///
 	subtitle("equal-spit adults") ///
 	note("Source: WID.world")
 ```
+![alt text](wid_example1.png)
 
 Plot the evolution of the pre-tax national income of the bottom 50% of the population in China, France and the United States since 1978 (in log scale):
 ```stata
@@ -59,6 +60,7 @@ graph twoway line value* year, yscale(log) ylabel(1 2 5 10 20) ///
 	title("Average pre-tax national income of the bottom 50%") subtitle("equal-split adults") ///
 	note("Source: WID.world") legend(rows(1))
 ```
+![alt text](wid_example2.png)
 
 Plot the long-run evolution of average net national income per adult in France, Germany, the United Kingdom and the United States (in log scale):
 ```stata
@@ -88,3 +90,4 @@ graph twoway line value* year, yscale(log) ///
 	title("Average net national income") subtitle("per adult") ///
 	note("Source: WID.world")
 ```
+![alt text](wid_example3.png)
