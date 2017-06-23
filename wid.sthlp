@@ -157,7 +157,7 @@ Plot wealth inequality share in France:
         
         {cmd:graph twoway line value* year, title("Wealth inequality in France") ///}
         {cmd:    ylabel(0.2 "20%" 0.4 "40%" 0.6 "60%" 0.8 "80%") ///}
-        {cmd:    subtitle("equal-spit adults") ///}
+        {cmd:    subtitle("equal-split adults") ///}
         {cmd:    note("Source: WID.world")}
         
         {it:({stata wid_example1:click to run})}
