@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.0.2  20jun2017}{...}
+{* *! version 1.0.3  11oct2017}{...}
 {title:Title}
 
 {phang}
@@ -37,7 +37,7 @@
 {p2col: nvanp}net value added of non-profit sector{p_end}
 {p2col: nvatp}taxes on product (net) of national economy{p_end}
 {p2col: comnf}compensation of employees paid by non financial corporations{p_end}
-{p2col: nsunf}net operating surplus of non-financial corporations{p_end}
+{p2col: nsunf}net operating surplus of non-financial corporations {p_end}
 {p2col: taxnf}other taxes on production (net) paid by non-financial corporations sector{p_end}
 {p2col: comfc}compensation of employees paid by financial corporations sector{p_end}
 {p2col: nsufc}net operating surplus of financial corporations{p_end}
@@ -60,7 +60,7 @@
 {p2col: nsrho}net operating surplus (housing rents) of personal sector{p_end}
 {p2col: prhho}property income received by personal sector{p_end}
 {p2col: prdho}property income paid by personal sector{p_end}
-{p2col: prngo}primary income of general government{p_end}
+{p2col: prngo}primary income of general government {p_end}
 {p2col: targo}taxes on production (net) received by general government{p_end}
 {p2col: phigo}property income received by general government{p_end}
 {p2col: phdgo}property income paid by general government{p_end}
@@ -88,10 +88,10 @@
 {p2col: flemp}compensation of employees{p_end}
 {p2col: fllbu}labor component of net mixed income{p_end}
 {p2col: flprl}imputed taxes on production{p_end}
-{p2col: fkkbu}capital component of net mixed income{p_end}
-{p2col: fkhou}housing asset income{p_end}
-{p2col: fkfin}property income received{p_end}
-{p2col: fkdeb}property income paid{p_end}
+{p2col: fkkbu}capital component of net mixed income {p_end}
+{p2col: fkhou}housing asset income {p_end}
+{p2col: fkfin}property income received {p_end}
+{p2col: fkdeb}property income paid {p_end}
 {p2col: fkret}undistributed corporate profits{p_end}
 {p2col: fkprk}imputed taxed on production{p_end}
 {p2col: ppinc}pre-tax income (pension definition){p_end}
@@ -105,11 +105,11 @@
 {p2col: plinc}pre-tax labor income{p_end}
 {p2col: pkinc}pre-tax capital income{p_end}
 {p2col: plbel}labor share of social insurance income{p_end}
-{p2col: kminc}pre-tax capital income{p_end}
-{p2col: pkbek}capital share of social insurance income{p_end}
+{p2col: kminc}pre-tax capital income {p_end}
+{p2col: pkbek}capital share of social insurance income {p_end}
 {p2col: soben}social insurance benefits{p_end}
 {p2col: sobec}social insurance benefits in cash{p_end}
-{p2col: sobeo}other social insurance benefits{p_end}
+{p2col: sobeo}other social insurance benefits {p_end}
 {p2col: dincc}disposable income (narrow definition){p_end}
 {p2col: fprod}taxes on production{p_end}
 {p2col: dicot}taxes on income and wealth{p_end}
@@ -124,11 +124,11 @@
 
 {p2col :{bf:five-letter code}}{bf:description}{p_end}
 {p2line}
-{p2col: fiinc}fiscal income{p_end}
-{p2col: filin}fiscal labour income{p_end}
+{p2col: fiinc}fiscal income {p_end}
+{p2col: filin}fiscal labour income [total fiscal income ranking]{p_end}
 {p2col: fiwag}wages and pensions{p_end}
 {p2col: fimil}labour component of mixed income{p_end}
-{p2col: ficap}fiscal capital income{p_end}
+{p2col: ficap}fiscal capital income [total fiscal income ranking]{p_end}
 {p2col: fimik}capital component of mixed income{p_end}
 {p2col: firen}rents{p_end}
 {p2col: fiint}interest{p_end}
@@ -139,30 +139,32 @@
 {p2col: itlab}intuitive labor income{p_end}
 {p2col: itcap}intuitive capital income{p_end}
 {p2col: fainc}pre-tax factor income{p_end}
-{p2col: flinc}factor labor income{p_end}
+{p2col: flinc}factor labor income [total pre-tax factor income ranking]{p_end}
 {p2col: flemp}compensation of employees{p_end}
 {p2col: flwag}wages and salaries{p_end}
 {p2col: flsup}supplements to wages and salaries{p_end}
 {p2col: flcon}social contributions{p_end}
 {p2col: flmil}labor component of net mixed income{p_end}
-{p2col: fkinc}factor capital income{p_end}
+{p2col: fkinc}factor capital income [total pre-tax factor income ranking]{p_end}
 {p2col: fkhou}housing asset income{p_end}
 {p2col: fkequ}equity asset income{p_end}
 {p2col: fkfix}interest income{p_end}
 {p2col: fkpen}pensions and life insurance asset income{p_end}
+{p2col: fkmik}capital component of mixed income{p_end}
 {p2col: fkdeb}interest payments{p_end}
 {p2col: fkmor}mortgage interest paid{p_end}
 {p2col: fknmo}non-mortgage interest paid{p_end}
-{p2col: ptinc}pre-tax national income{p_end}
-{p2col: ptlin}pre-tax labor income{p_end}
-{p2col: ptemp}compensation of employees{p_end}
-{p2col: ptlbu}labor component of net mixed income{p_end}
+{p2col: ptinc}pre-tax national income {p_end}
+{p2col: ptlin}pre-tax labor income [total pre-tax income ranking]{p_end}
+{p2col: ptemp}compensation of employees {p_end}
+{p2col: ptlbu}labor component of net mixed income {p_end}
 {p2col: ptsoc}pensions and social insurance income (labor share){p_end}
-{p2col: ptkin}pre-tax capital income{p_end}
+{p2col: ptkin}pre-tax capital income [total pre-tax income ranking]{p_end}
 {p2col: pthou}housing asset income{p_end}
 {p2col: ptfin}equity asset income{p_end}
 {p2col: ptint}interest income{p_end}
 {p2col: ptkpe}pensions and social insurance income (capital share){p_end}
+{p2col: ptmik}capital component of mixed income{p_end}
 {p2col: ptinp}interest payments{p_end}
 {p2col: ptmor}mortgage interest paid{p_end}
 {p2col: ptnmo}non-mortgage interest paid{p_end}
@@ -179,6 +181,7 @@
 {p2col: pkfin}equity asset income [pre-tax capital income ranking]{p_end}
 {p2col: pkint}interest income [pre-tax capital income ranking]{p_end}
 {p2col: pkkpe}pensions and social insurance income (capital share) [pre-tax capital income ranking]{p_end}
+{p2col: pkmik}capital component of mixed income{p_end}
 {p2col: pkinp}interest payments [pre-tax capital income ranking]{p_end}
 {p2col: pkmor}mortgage interest paid [pre-tax capital income ranking]{p_end}
 {p2col: pknmo}non-mortgage interest paid [pre-tax capital income ranking]{p_end}
@@ -266,11 +269,11 @@
 {p2col: iwdeb}non-profit debt{p_end}
 {p2col: iwfie}non-profit financial assets excluding cash{p_end}
 {p2col: cwboo}book value of corporations{p_end}
-{p2col: cwnfa}corporate non-financial assets{p_end}
-{p2col: cwhou}corporate housing assets{p_end}
-{p2col: cwdwe}corporate dwellings{p_end}
-{p2col: cwlan}corporate land underlying dwellings{p_end}
-{p2col: cwbus}corporate business and other non-financial assets{p_end}
+{p2col: cwnfa}corporate non-financial assets {p_end}
+{p2col: cwhou}corporate housing assets {p_end}
+{p2col: cwdwe}corporate dwellings {p_end}
+{p2col: cwlan}corporate land underlying dwellings {p_end}
+{p2col: cwbus}corporate business and other non-financial assets {p_end}
 {p2col: cwagr}corporate agricultural land{p_end}
 {p2col: cwodk}corporate other domestic capital{p_end}
 {p2col: cwnat}corporate natural capital{p_end}
@@ -306,7 +309,7 @@
 {p2col: gwpen}government pension funds & life insurance{p_end}
 {p2col: gwdeb}government debt{p_end}
 {p2col: gwfie}government financial assets excluding cash{p_end}
-{p2col: nweal}market-value national wealth{p_end}
+{p2col: nweal}market-value national wealth {p_end}
 {p2col: nwnfm}national non-financial assets (market value){p_end}
 {p2col: nwhom}national housing assets (market value){p_end}
 {p2col: nwbum}national business and other non-financial assets (market value){p_end}
@@ -407,9 +410,9 @@
 {p2col :{bf:five-letter code}}{bf:description}{p_end}
 {p2line}
 {p2col: nyixx}national income price index{p_end}
-{p2col: lcusp}ppp conversion factor, LCU per USD{p_end}
-{p2col: lceup}ppp conversion factor, LCU per EUR{p_end}
-{p2col: lcyup}ppp conversion factor, LCU per CNY{p_end}
+{p2col: lcusp}PPP conversion factor, LCU per USD{p_end}
+{p2col: lceup}PPP conversion factor, LCU per EUR{p_end}
+{p2col: lcyup}PPP conversion factor, LCU per CNY{p_end}
 {p2col: lcusx}market exchange rate, LCU per USD{p_end}
 {p2col: lceux}market exchange rate, LCU per EUR{p_end}
 {p2col: lcyux}market exchange rate, LCU per CNY{p_end}

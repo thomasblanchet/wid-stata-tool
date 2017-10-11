@@ -1,4 +1,4 @@
-*! wid v1.0.2 Thomas Blanchet 20jun2017
+*! wid v1.0.3 Thomas Blanchet 11oct2017
 
 program wid
 	version 13
@@ -44,9 +44,9 @@ program wid
 		}
 		local areas `areas_comma'
 	}
-	// In no year specified, use all of them
+	// If no year specified, use all of them
 	if inlist("`years'", "_all", "") {
-		local years "1800-2015"
+		local years "1800-2016"
 	}
 	else {
 		// Add a comma between years
@@ -99,6 +99,7 @@ program wid
 			}
 			quietly replace variable = "`name'" in `i'
 		}
+		quietly duplicates drop
 		tempfile list_indicators
 		quietly save "`list_indicators'"
 	}
@@ -117,6 +118,7 @@ program wid
 			}
 			quietly replace percentile = "`p'" in `i'
 		}
+		quietly duplicates drop
 		tempfile list_perc
 		quietly save "`list_perc'"
 	}
@@ -135,6 +137,7 @@ program wid
 			}
 			quietly replace age = `a' in `i'
 		}
+		quietly duplicates drop
 		tempfile list_ages
 		quietly save "`list_ages'"
 	}
@@ -153,6 +156,7 @@ program wid
 			}
 			quietly replace pop = "`pop'" in `i'
 		}
+		quietly duplicates drop
 		tempfile list_population
 		quietly save "`list_population'"
 	}
@@ -207,12 +211,21 @@ program wid
 	else {
 		local plural_age "y"
 	}
+	quietly tab pop
+	local nb_pop = r(r)
+	if (`nb_pop' > 1) {
+		local plural_pop "ies"
+	}
+	else {
+		local plural_pop "y"
+	}
 	
 	display as text "DONE"
 	display as text "(found `nb_variable' variable`plural_variable'", _continue
 	display as text "for `nb_country' area`plural_country',", _continue
-	display as text "`nb_percentile' percentile`plural_percentile'", _continue
-	display as text "and `nb_age' age categor`plural_age')"
+	display as text "`nb_percentile' percentile`plural_percentile',", _continue
+	display as text "`nb_age' age categor`plural_age'", _continue
+	display as text "`nb_pop' population categor`plural_pop')"
 	
 	// ---------------------------------------------------------------------- //
 	// Retrieve the data from the API
@@ -273,6 +286,7 @@ program wid
 		quietly save "`codes'", replace
 		
 		quietly levelsof chunk, local(chunk_list)
+		local first 1
 		foreach c of local chunk_list {
 			quietly use "`codes'", clear
 			quietly levelsof metadata_code if (chunk == `c'), separate(",") local(variables_list) clean
@@ -280,13 +294,20 @@ program wid
 			
 			clear
 			javacall com.wid.WIDDownloader importCountriesVariablesMetadata, args("`areas_list'" "`variables_list'")
+			
+			// Pass if the dataset is empty (can happen with metadata)
+			quietly count
+			if (r(N) == 0) {
+				continue
+			}
 		
 			keep variable shortname shortdes pop age country source method
 			quietly tostring variable shortname shortdes pop age country source method, replace
 			
-			if (`c' != 0) {
+			if (`first' == 0) {
 				quietly append using "`output_metadata'"
 			}
+			local first 0
 			quietly save "`output_metadata'", replace
 		}
 			
@@ -294,8 +315,10 @@ program wid
 		
 		quietly duplicates drop variable country, force
 		
+		quietly save "`output_metadata'", replace
+		
 		// Merge data & metadata
-		use "`output_data'"
+		use "`output_data'", clear
 		quietly merge n:1 variable country using "`output_metadata'", nogenerate keep(master match)
 		
 		order country variable percentile year value shortname shortdes pop age source method

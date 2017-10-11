@@ -1,4 +1,4 @@
-*! wid_example1 v1.0.2 Thomas Blanchet 20jun2017
+*! wid_example1 v1.0.3 Thomas Blanchet 11oct2017
 
 // Plot the evolution of the pre-tax national income of the bottom 50% of the
 // population in China, France and the United States since 1978 (in log scale)

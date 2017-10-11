@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.0.2  20jun2017}{...}
+{* *! version 1.0.3  11oct2017}{...}
 {title:Title}
 
 {phang}
@@ -303,7 +303,7 @@
 {marker subregion_codes}{...}
 {title:Country subregions}
 
-{p2col :{bf:five-letter country code}}{bf:description}{p_end}
+{p2col :{bf:five-letter region code}}{bf:description}{p_end}
 {p2line}
 {p2col: US-AL}Alabama{p_end}
 {p2col: US-AK}Alaska{p_end}

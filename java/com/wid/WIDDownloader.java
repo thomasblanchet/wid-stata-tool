@@ -8,7 +8,7 @@ import com.stata.sfi.*;
 
 public class WIDDownloader {
 
-    private static String apiKey = "<API key>";
+    private static String apiKey = "<private API key>";
 
     private static String apiCountriesAvailableVariables = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-available-variables";
     private static String apiCountriesVariablesDownload  = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-variables-dl";
@@ -253,7 +253,7 @@ public class WIDDownloader {
             List<String> listCountry   = new ArrayList<String>();
             List<String> listSource    = new ArrayList<String>();
             List<String> listMethod    = new ArrayList<String>();
-    
+
             // Skip the first line (with variable names)
             scanner.useDelimiter("\\\\n").next();
     
@@ -263,7 +263,13 @@ public class WIDDownloader {
     
             // The final double quote marks the end of the file
             int lineIndex = 0;
-            String line = scanner.next();
+            String line;
+            try {
+                line = scanner.next();
+            } catch (NoSuchElementException e) {
+                // Empty dataset
+                return(0);
+            }
             while (!line.equals("\"")) {
                 lineIndex++;
     

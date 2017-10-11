@@ -84,8 +84,11 @@ See {help wid_list_area_codes:list of area codes} for the complete list of area 
 {phang}
 {opt p:erc(list of percentiles|_all)} specify which percentiles of the distribution to retrieve.
 For share and average variables, percentiles correspond to percentile ranges and take the form {it:pXXpYY}.
-For example the top 1% share correspond to {it:p99p100}. The top 10‰ share excluding the top 1% is {it:p90p99}.
-For thresholds, percentiles are just {it:pXX}. For example, the 90% quantile is {it:p90}. Variables with no distributional meaning use the percentile {it:p0p100}.
+For example the top 1% share correspond to {it:p99p100}. The top 10% share excluding the top 1% is {it:p90p99}.
+Thresholds associated to the percentile group {it:pXXpYY} correspond to the minimal income or wealth level that gets you into the group.
+For example, the threshold of the percentile group {it:p90p100} or {it:p90p91} correspond to the 90% quantile.
+Variables with no distributional meaning use the percentile {it:p0p100}.
+
 
 {phang}
 {opt ag:es(list of age codes|_all)} specify which age categories to retrieve.
@@ -111,7 +114,7 @@ Some of the most common possibilities include:
 {p2col :{bf:one-letter code}}{bf:description}{p_end}
 {p2line}
 {p2col :i}individuals{p_end}
-{p2col :t}tax units (20+){p_end}
+{p2col :t}tax units{p_end}
 {p2col :j}equal-split adults (ie. income or wealth divided equally among spouses){p_end}
 {p2line}
 {space 14}See {help wid_list_population_codes:list of population codes} for the complete list.
