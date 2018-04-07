@@ -258,7 +258,7 @@ public class WIDDownloader {
             scanner.useDelimiter("\\\\n").next();
     
             // Regex matching one line
-            Pattern pattern = Pattern.compile("^(.*?),(.*?),(.*?),(.*?),(.*?),(.*?),\\\\\"(.*?)\\\\\",\\\\\"(.*?)\\\\\",$");
+            Pattern pattern = Pattern.compile("^(.*?),(.*?),(.*?),(.*?),(.*?),(.*?),\\\\\"(.*?)\\\\\",\\\\\"(.*?)\\\\\",?$");
             Matcher matcher;
     
             // The final double quote marks the end of the file

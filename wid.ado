@@ -310,16 +310,22 @@ program wid
 			local first 0
 			quietly save "`output_metadata'", replace
 		}
+		
+		quietly count
+		if (r(N) > 0) {
+			display as text "DONE"
+		
+			quietly duplicates drop variable country, force
 			
-		display as text "DONE"
-		
-		quietly duplicates drop variable country, force
-		
-		quietly save "`output_metadata'", replace
-		
-		// Merge data & metadata
-		use "`output_data'", clear
-		quietly merge n:1 variable country using "`output_metadata'", nogenerate keep(master match)
+			quietly save "`output_metadata'", replace
+			
+			// Merge data & metadata
+			use "`output_data'", clear
+			quietly merge n:1 variable country using "`output_metadata'", nogenerate keep(master match)
+		}
+		else {
+			display as text "DONE (no metadata found for requested data)"
+		}
 		
 		order country variable percentile year value shortname shortdes pop age source method
 	}
