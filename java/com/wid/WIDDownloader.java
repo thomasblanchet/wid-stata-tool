@@ -4,15 +4,16 @@ import java.net.*;
 import java.util.*;
 import java.util.regex.*;
 import java.io.*;
+import org.json.*;
 import com.stata.sfi.*;
 
 public class WIDDownloader {
 
     private static String apiKey = "<private API key>";
 
-    private static String apiCountriesAvailableVariables = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-available-variables";
-    private static String apiCountriesVariablesDownload  = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-variables-dl";
-    private static String apiCountriesVariablesMetadata  = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/wid-countries-variables-metadata";
+    private static String apiCountriesAvailableVariables = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/countries-available-variables";
+    private static String apiCountriesVariables          = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/countries-variables";
+    private static String apiCountriesVariablesMetadata  = "https://rfap9nitz6.execute-api.eu-west-1.amazonaws.com/prod/countries-variables-metadata";
 
     public static int importCountriesAvailableVariables(String[] args) {
         // Retrieve the arguments of the query
@@ -30,16 +31,22 @@ public class WIDDownloader {
 
         // Access the online database
         Scanner scanner;
+        String response;
         try {
             // Perform the GET query
             URL queryURL = new URL(apiCountriesAvailableVariables + "?" + query);
             HttpURLConnection connection = (HttpURLConnection) queryURL.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("x-api-key", apiKey);
-            
+
             // Read the response
-            InputStream response = connection.getInputStream();
-            scanner = new Scanner(response);
+            scanner = new Scanner(connection.getInputStream());
+            response = new String();
+            while (scanner.hasNext()) {
+                response += scanner.nextLine();
+            }
+            scanner.close();
+
         } catch (Exception e) {
             SFIToolkit.error("\ncould not access the online WID.world database; please check your internet connection\n");
             return(677);
@@ -52,48 +59,46 @@ public class WIDDownloader {
             List<String>  listPercentile = new ArrayList<String>();
             List<Integer> listAge        = new ArrayList<Integer>();
             List<String>  listPop        = new ArrayList<String>();
-    
-            // Skip the first line (with variable names)
-            scanner.useDelimiter("\\\\n").next();
-    
-            // Regex matching one line
-            Pattern pattern = Pattern.compile("^(.*?),(.*?),(.*?),(.*?),(.*?)$");
-            Matcher matcher;
-    
-            // The final double quote marks the end of the file
-            int lineIndex = 0;
-            String line = scanner.next();
-            while (!line.equals("\"")) {
-                lineIndex++;
-    
-                matcher = pattern.matcher(line);
-                matcher.matches();
-    
-                listVariable.add(matcher.group(1));
-                listCountry.add(matcher.group(2));
-                listPercentile.add(matcher.group(3));
-                listAge.add(Integer.parseInt(matcher.group(4)));
-                listPop.add(matcher.group(5));
-    
-                line = scanner.next();
+
+            JSONObject json = new JSONObject(response);
+            Iterator<String> variableIter = json.keys();
+            while (variableIter.hasNext()) {
+                String variable = variableIter.next();
+                JSONObject jsonCountry = json.getJSONObject(variable);
+                Iterator<String> countryIter = jsonCountry.keys();
+                while (countryIter.hasNext()) {
+                    String country = countryIter.next();
+                    JSONArray jsonProperties = jsonCountry.getJSONArray(country);
+                    Iterator propertiesIter = jsonProperties.iterator();
+                    while (propertiesIter.hasNext()) {
+                        JSONArray properties = (JSONArray) propertiesIter.next();
+
+                        listVariable.add(variable);
+                        listCountry.add(country);
+                        listPercentile.add(properties.getString(0));
+                        listAge.add(Integer.parseInt(properties.getString(1)));
+                        listPop.add(properties.getString(2));
+                    }
+                }
             }
-    
+
             // Fill the Stata dataset
             Data.addVarStr("variable", 6);
             Data.addVarStr("country", 5);
             Data.addVarStr("percentile", 14);
             Data.addVarInt("age");
             Data.addVarStr("pop", 1);
-    
-            Data.setObsCount(lineIndex);
-    
+
+            int obsCount = listVariable.size();
+            Data.setObsCount(obsCount);
+
             int variableVariableIndex   = Data.getVarIndex("variable");
             int variableCountryIndex    = Data.getVarIndex("country");
             int variablePercentileIndex = Data.getVarIndex("percentile");
             int variableAgeIndex        = Data.getVarIndex("age");
             int variablePopIndex        = Data.getVarIndex("pop");
-    
-            for (int i = 0; i < lineIndex; i++) {
+
+            for (int i = 0; i < obsCount; i++) {
                 Data.storeStr(variableVariableIndex,   i + 1, listVariable.get(i));
                 Data.storeStr(variableCountryIndex,    i + 1, listCountry.get(i));
                 Data.storeStr(variablePercentileIndex, i + 1, listPercentile.get(i));
@@ -104,24 +109,22 @@ public class WIDDownloader {
             SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
             return(674);
         }
-        
+
         return(0);
     }
 
-    public static int importCountriesVariablesDownload(String[] args) {
+    public static int importCountriesVariables(String[] args) {
         // Retrieve the arguments of the query
         String countries = args[0];
         String variables = args[1];
-        String years     = args[2];
 
         // Create the query
         String query;
         try {
             String charset = java.nio.charset.StandardCharsets.UTF_8.name();
-            query = String.format("countries=%s&variables=%s&years=%s",
+            query = String.format("countries=%s&variables=%s",
                 URLEncoder.encode(countries, charset),
-                URLEncoder.encode(variables, charset),
-                URLEncoder.encode(years, charset)
+                URLEncoder.encode(variables, charset)
             );
         } catch (Exception e) {
             SFIToolkit.error("\nthe arguments contains invalid characters\n");
@@ -130,16 +133,21 @@ public class WIDDownloader {
 
         // Access the online database
         Scanner scanner;
+        String response;
         try {
             // Perform the GET query
-            URL queryURL = new URL(apiCountriesVariablesDownload + "?" + query);
+            URL queryURL = new URL(apiCountriesVariables + "?" + query);
             HttpURLConnection connection = (HttpURLConnection) queryURL.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("x-api-key", apiKey);
-    
+
             // Read the response
-            InputStream response = connection.getInputStream();
-            scanner = new Scanner(response);
+            scanner = new Scanner(connection.getInputStream());
+            response = new String();
+            while (scanner.hasNext()) {
+                response += scanner.nextLine();
+            }
+            scanner.close();
         } catch (Exception e) {
             SFIToolkit.error("\ncould not access the online WID.world database; please check your internet connection\n");
             return(677);
@@ -148,63 +156,77 @@ public class WIDDownloader {
         // Parse the results
         try {
             List<String>  listCountry    = new ArrayList<String>();
-            List<String>  listIndicator  = new ArrayList<String>();
+            List<String>  listVariable   = new ArrayList<String>();
             List<String>  listPercentile = new ArrayList<String>();
+            List<Integer> listAge        = new ArrayList<Integer>();
+            List<String>  listPop        = new ArrayList<String>();
             List<Integer> listYear       = new ArrayList<Integer>();
             List<Double>  listValue      = new ArrayList<Double>();
-    
-            // Skip the first line (with variable names)
-            scanner.useDelimiter("\\\\n").next();
-    
-            // Regex matching one line
-            Pattern pattern = Pattern.compile("^(.*?),(.*?),(.*?),(.*?),(.*?)$");
-            Matcher matcher;
-    
-            // The final double quote marks the end of the file
-            int lineIndex = 0;
-            String line = scanner.next();
-            while (!line.equals("\"")) {
-                lineIndex++;
-    
-                matcher = pattern.matcher(line);
-                matcher.matches();
-    
-                listCountry.add(matcher.group(1));
-                listIndicator.add(matcher.group(2));
-                listPercentile.add(matcher.group(3));
-                listYear.add(Integer.parseInt(matcher.group(4)));
-                listValue.add(Double.parseDouble(matcher.group(5)));
-    
-                line = scanner.next();
+
+            JSONObject json = new JSONObject(response);
+            Iterator<String> indicatorIter = json.keys();
+            while (indicatorIter.hasNext()) {
+                String indicator = indicatorIter.next();
+                JSONArray indicatorData = json.getJSONArray(indicator);
+                Iterator indicatorDataIter = indicatorData.iterator();
+                while (indicatorDataIter.hasNext()) {
+                    JSONObject countryData = (JSONObject) indicatorDataIter.next();
+
+                    String country = JSONObject.getNames(countryData)[0];
+                    JSONArray countryValues = countryData.getJSONObject(country).getJSONArray("values");
+
+                    Iterator countryValuesIter = countryValues.iterator();
+                    while (countryValuesIter.hasNext()) {
+                        JSONObject value = (JSONObject) countryValuesIter.next();
+
+                        String[] parts = indicator.split("_");
+
+                        listCountry.add(country);
+                        listVariable.add(parts[0]);
+                        listPercentile.add(parts[1]);
+                        listAge.add(Integer.parseInt(parts[2]));
+                        listPop.add(parts[3]);
+                        listYear.add(value.getInt("y"));
+                        listValue.add(value.getDouble("v"));
+                    }
+                }
             }
-    
+
             // Fill the Stata dataset
+            Data.addVarStr("variable", 6);
             Data.addVarStr("country", 5);
-            Data.addVarStr("indicator", 12);
             Data.addVarStr("percentile", 14);
+            Data.addVarInt("age");
+            Data.addVarStr("pop", 1);
             Data.addVarInt("year");
             Data.addVarDouble("value");
-    
-            Data.setObsCount(lineIndex);
-    
+
+            int obsCount = listVariable.size();
+            Data.setObsCount(obsCount);
+
             int variableCountryIndex    = Data.getVarIndex("country");
-            int variableIndicatorIndex  = Data.getVarIndex("indicator");
+            int variableVariableIndex   = Data.getVarIndex("variable");
             int variablePercentileIndex = Data.getVarIndex("percentile");
+            int variableAgeIndex        = Data.getVarIndex("age");
+            int variablePopIndex        = Data.getVarIndex("pop");
             int variableYearIndex       = Data.getVarIndex("year");
             int variableValueIndex      = Data.getVarIndex("value");
-    
-            for (int i = 0; i < lineIndex; i++) {
+
+            for (int i = 0; i < obsCount; i++) {
                 Data.storeStr(variableCountryIndex,    i + 1, listCountry.get(i));
-                Data.storeStr(variableIndicatorIndex,  i + 1, listIndicator.get(i));
+                Data.storeStr(variableVariableIndex,   i + 1, listVariable.get(i));
                 Data.storeStr(variablePercentileIndex, i + 1, listPercentile.get(i));
+                Data.storeNum(variableAgeIndex,        i + 1, listAge.get(i));
+                Data.storeStr(variablePopIndex,        i + 1, listPop.get(i));
                 Data.storeNum(variableYearIndex,       i + 1, listYear.get(i));
                 Data.storeNum(variableValueIndex,      i + 1, listValue.get(i));
             }
         } catch (Exception e) {
+            SFIToolkit.error(e.toString());
             SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
             return(674);
         }
-        
+
         return(0);
     }
 
@@ -228,16 +250,21 @@ public class WIDDownloader {
 
         // Access the online database
         Scanner scanner;
+        String response;
         try {
             // Perform the GET query
             URL queryURL = new URL(apiCountriesVariablesMetadata + "?" + query);
             HttpURLConnection connection = (HttpURLConnection) queryURL.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("x-api-key", apiKey);
-    
+
             // Read the response
-            InputStream response = connection.getInputStream();
-            scanner = new Scanner(response);
+            scanner = new Scanner(connection.getInputStream());
+            response = new String();
+            while (scanner.hasNext()) {
+                response += scanner.nextLine();
+            }
+            scanner.close();
         } catch (Exception e) {
             SFIToolkit.error("\ncould not access the online WID.world database; please check your internet connection\n");
             return(677);
@@ -245,113 +272,273 @@ public class WIDDownloader {
 
         // Parse the results
         try {
-            List<String> listVariable  = new ArrayList<String>();
-            List<String> listShortName = new ArrayList<String>();
-            List<String> listShortDes  = new ArrayList<String>();
-            List<String> listPop       = new ArrayList<String>();
-            List<String> listAge       = new ArrayList<String>();
-            List<String> listCountry   = new ArrayList<String>();
-            List<String> listSource    = new ArrayList<String>();
-            List<String> listMethod    = new ArrayList<String>();
+            List<String>  listVariable    = new ArrayList<String>();
+            List<String>  listCountry     = new ArrayList<String>();
+            List<String>  listCountryName = new ArrayList<String>();
+            List<String>  listPercentile  = new ArrayList<String>();
+            List<String>  listPop         = new ArrayList<String>();
+            List<Integer> listAge         = new ArrayList<Integer>();
+            int sizeCountryName = 0;
 
-            // Skip the first line (with variable names)
-            scanner.useDelimiter("\\\\n").next();
-    
-            // Regex matching one line
-            Pattern pattern = Pattern.compile("^(.*?),(.*?),(.*?),(.*?),(.*?),(.*?),\\\\\"(.*?)\\\\\",\\\\\"(.*?)\\\\\",?$");
-            Matcher matcher;
-    
-            // The final double quote marks the end of the file
-            int lineIndex = 0;
-            String line;
-            try {
-                line = scanner.next();
-            } catch (NoSuchElementException e) {
-                // Empty dataset
-                return(0);
+            List<String> listShortName    = new ArrayList<String>();
+            List<String> listSimpleDes    = new ArrayList<String>();
+            List<String> listTechnicalDes = new ArrayList<String>();
+            int sizeShortName = 0;
+            int sizeSimpleDes = 0;
+            int sizeTechnicalDes = 0;
+
+            List<String> listShortType = new ArrayList<String>();
+            List<String> listLongType  = new ArrayList<String>();
+            int sizeShortType = 0;
+            int sizeLongType = 0;
+
+            List<String> listShortPop = new ArrayList<String>();
+            List<String> listLongPop  = new ArrayList<String>();
+            int sizeShortPop = 0;
+            int sizeLongPop = 0;
+
+            List<String> listShortAge = new ArrayList<String>();
+            List<String> listLongAge  = new ArrayList<String>();
+            int sizeShortAge = 0;
+            int sizeLongAge = 0;
+
+            List<String> listUnit      = new ArrayList<String>();
+            List<String> listUnitLabel = new ArrayList<String>();
+            int sizeUnit = 0;
+            int sizeUnitLabel = 0;
+
+            List<String> listSource = new ArrayList<String>();
+            List<String> listMethod = new ArrayList<String>();
+            int sizeSource = 0;
+            int sizeMethod = 0;
+
+            JSONArray json = new JSONArray(response).getJSONObject(0).getJSONArray("metadata_func");
+
+            // First, loop over the indicator
+            Iterator indicatorIter = json.iterator();
+            while (indicatorIter.hasNext()) {
+                JSONObject indicator = (JSONObject) indicatorIter.next();
+                String indicatorName = JSONObject.getNames(indicator)[0];
+                JSONArray indicatorData = indicator.getJSONArray(indicatorName);
+
+                String[] parts = indicatorName.split("_");
+                String variable = parts[0];
+                String percentile = parts[1];
+                String age = parts[2];
+                String pop = parts[3];
+                String concept = variable.substring(2, 6);
+
+                JSONObject nameJSON = indicatorData.getJSONObject(0).getJSONObject("name");
+                JSONObject typeJSON = indicatorData.getJSONObject(1).getJSONObject("type");
+                JSONObject popJSON  = indicatorData.getJSONObject(2).getJSONObject("pop");
+                JSONObject ageJSON  = indicatorData.getJSONObject(3).getJSONObject("age");
+                JSONArray unitJSON  = indicatorData.getJSONObject(4).getJSONArray("units");
+                JSONObject notesJSON = indicatorData.getJSONObject(5).getJSONArray("notes").getJSONObject(0);
+
+                String shortName = nameJSON.getString("shortname");
+                String simpleDes = nameJSON.getString("simpledes");
+                String technicalDes = nameJSON.getString("technicaldes");
+
+                String shortType = typeJSON.getString("shortdes");
+                String longType = typeJSON.getString("longdes");
+
+                String shortPop = popJSON.getString("shortdes");
+                String longPop = popJSON.getString("longdes");
+
+                String shortAge = ageJSON.getString("shortname");
+                String longAge = ageJSON.getString("fullname");
+
+                String country;
+                String countryName;
+
+                String unit;
+                String unitLabel;
+
+                String source = "";
+                String method = "";
+
+                // The item "unit" (5th position) is always filled, so we use it to
+                // loop over the different countries
+                Iterator countryIter = unitJSON.iterator();
+                while (countryIter.hasNext()) {
+                    JSONObject countryUnits = (JSONObject) countryIter.next();
+
+                    country = countryUnits.getString("country");
+                    countryName = countryUnits.getString("country_name");
+                    unit = countryUnits.getJSONObject("metadata").getString("unit");
+                    unitLabel = countryUnits.getJSONObject("metadata").optString("unit_name");
+
+                    // Find matching source and method, if any
+                    if (!notesJSON.isNull(concept)) {
+                        Iterator countryNotesIter = notesJSON.getJSONArray(concept).iterator();
+                        while (countryNotesIter.hasNext()) {
+                            JSONObject countryNotes = (JSONObject) countryNotesIter.next();
+                            if (countryNotes.getString("alpha2").equals(country)) {
+                                source = countryNotes.getString("source");
+                                method = countryNotes.getString("method");
+                                break;
+                            }
+                        }
+                    }
+
+                    listVariable.add(variable);
+                    listPercentile.add(percentile);
+                    listCountry.add(country);
+                    listAge.add(Integer.parseInt(age));
+                    listPop.add(pop);
+                    listCountryName.add(countryName);
+                    if (countryName.length() > sizeCountryName) {
+                        sizeCountryName = countryName.length();
+                    }
+
+                    listShortName.add(shortName);
+                    if (shortName.length() > sizeShortName) {
+                        sizeShortName = shortName.length();
+                    }
+                    listSimpleDes.add(simpleDes);
+                    if (simpleDes.length() > sizeSimpleDes) {
+                        sizeSimpleDes = simpleDes.length();
+                    }
+                    listTechnicalDes.add(technicalDes);
+                    if (technicalDes.length() > sizeTechnicalDes) {
+                        sizeTechnicalDes = technicalDes.length();
+                    }
+
+                    listShortType.add(shortType);
+                    if (shortType.length() > sizeShortType) {
+                        sizeShortType = shortType.length();
+                    }
+                    listLongType.add(longType);
+                    if (longType.length() > sizeLongType) {
+                        sizeLongType = longType.length();
+                    }
+
+                    listShortPop.add(shortPop);
+                    if (shortPop.length() > sizeShortPop) {
+                        sizeShortPop = shortPop.length();
+                    }
+                    listLongPop.add(longPop);
+                    if (longPop.length() > sizeLongPop) {
+                        sizeLongPop = longPop.length();
+                    }
+
+                    listShortAge.add(shortAge);
+                    if (shortAge.length() > sizeShortAge) {
+                        sizeShortAge = shortAge.length();
+                    }
+                    listLongAge.add(longAge);
+                    if (longAge.length() > sizeLongAge) {
+                        sizeLongAge = longAge.length();
+                    }
+
+                    listUnit.add(unit);
+                    if (unit.length() > sizeUnit) {
+                        sizeUnit = unit.length();
+                    }
+                    listUnitLabel.add(unitLabel);
+                    if (unitLabel.length() > sizeUnitLabel) {
+                        sizeUnitLabel = unitLabel.length();
+                    }
+
+                    listSource.add(source);
+                    if (source.length() > sizeSource) {
+                        sizeSource = source.length();
+                    }
+                    listMethod.add(method);
+                    if (method.length() > sizeMethod) {
+                        sizeMethod = method.length();
+                    }
+                }
             }
-            while (!line.equals("\"")) {
-                lineIndex++;
-    
-                matcher = pattern.matcher(line);
-                matcher.matches();
-    
-                listVariable.add(matcher.group(1));
-                listShortName.add(matcher.group(2));
-                listShortDes.add(matcher.group(3));
-                listPop.add(matcher.group(4));
-                listAge.add(matcher.group(5));
-                listCountry.add(matcher.group(6));
-                listSource.add(matcher.group(7));
-                listMethod.add(matcher.group(8));
-    
-                line = scanner.next();
-            }
-    
-            // Maximum size for string variables
-            int shortNameLength = 1;
-            int shortDesLength  = 1;
-            int popLength       = 1;
-            int ageLength       = 1;
-            int sourceLength    = 1;
-            int methodLength    = 1;
-            for (int i = 0; i < lineIndex; i++) {
-                if (shortNameLength < listShortName.get(i).length()) {
-                    shortNameLength = listShortName.get(i).length();
-                }
-                if (shortDesLength < listShortDes.get(i).length()) {
-                    shortDesLength = listShortDes.get(i).length();
-                }
-                if (popLength < listPop.get(i).length()) {
-                    popLength = listPop.get(i).length();
-                }
-                if (ageLength < listAge.get(i).length()) {
-                    ageLength = listAge.get(i).length();
-                }
-                if (sourceLength < listSource.get(i).length()) {
-                    sourceLength = listSource.get(i).length();
-                }
-                if (methodLength < listMethod.get(i).length()) {
-                    methodLength = listMethod.get(i).length();
-                }
-            }
-    
+
             // Fill the Stata dataset
-            Data.addVarStr("variable", 10);
-            Data.addVarStr("shortname", shortNameLength);
-            Data.addVarStr("shortdes", shortDesLength);
-            Data.addVarStr("pop", popLength);
-            Data.addVarStr("age", ageLength);
+            Data.addVarStr("variable", 6);
+            Data.addVarStr("percentile", 14);
             Data.addVarStr("country", 5);
-            Data.addVarStr("source", sourceLength);
-            Data.addVarStr("method", methodLength);
-    
-            Data.setObsCount(lineIndex);
-    
-            int variableVariableIndex  = Data.getVarIndex("variable");
-            int variableShortNameIndex = Data.getVarIndex("shortname");
-            int variableShortDesIndex  = Data.getVarIndex("shortdes");
-            int variablePopIndex       = Data.getVarIndex("pop");
-            int variableAgeIndex       = Data.getVarIndex("age");
-            int variableCountryIndex   = Data.getVarIndex("country");
-            int variableSourceIndex    = Data.getVarIndex("source");
-            int variableMethodIndex    = Data.getVarIndex("method");
-    
-            for (int i = 0; i < lineIndex; i++) {
-                Data.storeStr(variableVariableIndex,  i + 1, listVariable.get(i));
-                Data.storeStr(variableShortNameIndex, i + 1, listShortName.get(i));
-                Data.storeStr(variableShortDesIndex,  i + 1, listShortDes.get(i));
-                Data.storeStr(variablePopIndex,       i + 1, listPop.get(i));
-                Data.storeStr(variableAgeIndex,       i + 1, listAge.get(i));
-                Data.storeStr(variableCountryIndex,   i + 1, listCountry.get(i));
-                Data.storeStr(variableSourceIndex,    i + 1, listSource.get(i));
-                Data.storeStr(variableMethodIndex,    i + 1, listMethod.get(i));
+            Data.addVarStr("countryname", sizeCountryName);
+            Data.addVarInt("age");
+            Data.addVarStr("pop", 1);
+
+            Data.addVarStr("shortname", sizeShortName);
+            Data.addVarStr("simpledes", sizeSimpleDes);
+            Data.addVarStr("technicaldes", sizeTechnicalDes);
+
+            Data.addVarStr("shorttype", sizeShortType);
+            Data.addVarStr("longtype", sizeLongType);
+
+            Data.addVarStr("shortpop", sizeShortPop);
+            Data.addVarStr("longpop", sizeLongPop);
+
+            Data.addVarStr("shortage", sizeShortAge);
+            Data.addVarStr("longage", sizeLongAge);
+
+            Data.addVarStr("unit", sizeUnit);
+            Data.addVarStr("unitlabel", sizeUnitLabel);
+
+            Data.addVarStr("source", sizeSource);
+            Data.addVarStr("method", sizeMethod);
+
+            int obsCount = listVariable.size();
+            Data.setObsCount(obsCount);
+
+            int variableVariableIndex    = Data.getVarIndex("variable");
+            int variablePercentileIndex  = Data.getVarIndex("percentile");
+            int variableCountryIndex     = Data.getVarIndex("country");
+            int variableCountryNameIndex = Data.getVarIndex("countryname");
+            int variableAgeIndex         = Data.getVarIndex("age");
+            int variablePopIndex         = Data.getVarIndex("pop");
+
+            int variableShortNameIndex    = Data.getVarIndex("shortname");
+            int variableSimpleDesIndex    = Data.getVarIndex("simpledes");
+            int variableTechnicalDesIndex = Data.getVarIndex("technicaldes");
+
+            int variableShortTypeIndex = Data.getVarIndex("shorttype");
+            int variableLongTypeIndex  = Data.getVarIndex("longtype");
+
+            int variableShortPopIndex = Data.getVarIndex("shortpop");
+            int variableLongPopIndex  = Data.getVarIndex("longpop");
+
+            int variableShortAgeIndex = Data.getVarIndex("shortage");
+            int variableLongAgeIndex  = Data.getVarIndex("longage");
+
+            int variableUnitIndex      = Data.getVarIndex("unit");
+            int variableUnitLabelIndex = Data.getVarIndex("unitlabel");
+
+            int variableSourceIndex = Data.getVarIndex("source");
+            int variableMethodIndex = Data.getVarIndex("method");
+
+            for (int i = 0; i < obsCount; i++) {
+                Data.storeStr(variableVariableIndex,    i + 1, listVariable.get(i));
+                Data.storeStr(variablePercentileIndex,  i + 1, listPercentile.get(i));
+                Data.storeStr(variableCountryIndex,     i + 1, listCountry.get(i));
+                Data.storeStr(variableCountryNameIndex, i + 1, listCountryName.get(i));
+                Data.storeNum(variableAgeIndex,         i + 1, listAge.get(i));
+                Data.storeStr(variablePopIndex,         i + 1, listPop.get(i));
+
+                Data.storeStr(variableShortNameIndex,    i + 1, listShortName.get(i));
+                Data.storeStr(variableSimpleDesIndex,    i + 1, listSimpleDes.get(i));
+                Data.storeStr(variableTechnicalDesIndex, i + 1, listTechnicalDes.get(i));
+
+                Data.storeStr(variableShortTypeIndex, i + 1, listShortType.get(i));
+                Data.storeStr(variableLongTypeIndex,  i + 1, listLongType.get(i));
+
+                Data.storeStr(variableShortPopIndex, i + 1, listShortPop.get(i));
+                Data.storeStr(variableLongPopIndex,  i + 1, listLongPop.get(i));
+
+                Data.storeStr(variableShortAgeIndex, i + 1, listShortAge.get(i));
+                Data.storeStr(variableLongAgeIndex,  i + 1, listLongAge.get(i));
+
+                Data.storeStr(variableUnitIndex,      i + 1, listUnit.get(i));
+                Data.storeStr(variableUnitLabelIndex, i + 1, listUnitLabel.get(i));
+
+                Data.storeStr(variableSourceIndex, i + 1, listSource.get(i));
+                Data.storeStr(variableMethodIndex, i + 1, listMethod.get(i));
             }
         } catch (Exception e) {
             SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
             return(674);
         }
-        
+
         return(0);
     }
 

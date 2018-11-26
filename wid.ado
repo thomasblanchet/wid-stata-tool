@@ -44,22 +44,6 @@ program wid
 		}
 		local areas `areas_comma'
 	}
-	// If no year specified, use all of them
-	if inlist("`years'", "_all", "") {
-		local years "1800-2016"
-	}
-	else {
-		// Add a comma between years
-		foreach y of local years {
-			if ("`years_comma'" != "") {
-				local years_comma "`years_comma',`y'"
-			}
-			else {
-				local years_comma "`y'"
-			}
-		}
-		local years `years_comma'
-	}
 	
 	// ---------------------------------------------------------------------- //
 	// Retrieve all possible variables for the area(s)
@@ -102,6 +86,21 @@ program wid
 		quietly duplicates drop
 		tempfile list_indicators
 		quietly save "`list_indicators'"
+	}
+	
+	// Create a list with all the years specified, if any
+	clear
+	if !inlist("`years'", "", "_all") {
+		local n: word count `years'
+		quietly set obs `n'
+		quietly generate year = .
+		forvalue i = 1/`n' {
+			local year: word `i' of `years'
+			quietly replace year = `year' in `i'
+		}
+		quietly duplicates drop
+		tempfile list_years
+		quietly save "`list_years'"
 	}
 	
 	// Create a list with all percentiles specified, if any
@@ -224,7 +223,7 @@ program wid
 	display as text "(found `nb_variable' variable`plural_variable'", _continue
 	display as text "for `nb_country' area`plural_country',", _continue
 	display as text "`nb_percentile' percentile`plural_percentile',", _continue
-	display as text "`nb_age' age categor`plural_age'", _continue
+	display as text "`nb_age' age categor`plural_age',", _continue
 	display as text "`nb_pop' population categor`plural_pop')"
 	
 	// ---------------------------------------------------------------------- //
@@ -248,7 +247,7 @@ program wid
 		quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 		
 		clear
-		javacall com.wid.WIDDownloader importCountriesVariablesDownload, args("`areas_list'" "`variables_list'" "`years'")
+		javacall com.wid.WIDDownloader importCountriesVariables, args("`areas_list'" "`variables_list'" "`years'")
 		
 		if (`c' != 0) {
 			quietly append using "`output_data'"
@@ -256,16 +255,19 @@ program wid
 		quietly save "`output_data'", replace
 	}
 	display as text "DONE"
-		
+	
+	if ("`list_years'" != "") {
+		quietly merge n:1 year using "`list_years'", nogenerate keep(match)
+	}
+	
 	quietly count
 	if (r(N) == 0) {
 		display as text "(no data matching you selection)"
 		exit 0
 	}
 		
-	quietly duplicates drop country indicator percentile year, force
-	generate variable = substr(indicator, 1, 6) + substr(indicator, 8, 3) + substr(indicator, 12, 1)
-	drop indicator
+	quietly duplicates drop country variable age pop percentile year, force
+	quietly replace variable = variable + string(age) + pop
 	order country variable percentile year value
 	quietly save "`output_data'", replace
 	
@@ -279,9 +281,10 @@ program wid
 		// Only keep information required for the metadata, and divide them again
 		tempfile output_metadata
 		quietly use "`codes'", clear
+		
+		// Only keep one percentile per variable (metadata are the same for all percentiles)
 		drop chunk
-		quietly generate metadata_code = variable + "_" + string(age) + "_" + pop
-		quietly duplicates drop country metadata_code, force
+		quietly duplicates drop variable country age pop, force
 		quietly generate chunk = round(_n/50)
 		quietly save "`codes'", replace
 		
@@ -289,7 +292,7 @@ program wid
 		local first 1
 		foreach c of local chunk_list {
 			quietly use "`codes'", clear
-			quietly levelsof metadata_code if (chunk == `c'), separate(",") local(variables_list) clean
+			quietly levelsof data_code if (chunk == `c'), separate(",") local(variables_list) clean
 			quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 			
 			clear
@@ -301,8 +304,7 @@ program wid
 				continue
 			}
 		
-			keep variable shortname shortdes pop age country source method
-			quietly tostring variable shortname shortdes pop age country source method, replace
+			drop percentile
 			
 			if (`first' == 0) {
 				quietly append using "`output_metadata'"
@@ -315,19 +317,20 @@ program wid
 		if (r(N) > 0) {
 			display as text "DONE"
 		
+			quietly replace variable = variable + string(age) + pop
 			quietly duplicates drop variable country, force
 			
 			quietly save "`output_metadata'", replace
 			
 			// Merge data & metadata
 			use "`output_data'", clear
-			quietly merge n:1 variable country using "`output_metadata'", nogenerate keep(master match)
+			quietly merge n:1 country variable using "`output_metadata'", nogenerate keep(master match)
 		}
 		else {
 			display as text "DONE (no metadata found for requested data)"
 		}
 		
-		order country variable percentile year value shortname shortdes pop age source method
+		order country variable percentile year value
 	}
 	
 	// Saves memory
