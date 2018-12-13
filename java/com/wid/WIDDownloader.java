@@ -61,6 +61,7 @@ public class WIDDownloader {
             List<String>  listPop        = new ArrayList<String>();
 
             JSONObject json = new JSONObject(response);
+
             Iterator<String> variableIter = json.keys();
             while (variableIter.hasNext()) {
                 String variable = variableIter.next();
@@ -75,9 +76,9 @@ public class WIDDownloader {
 
                         listVariable.add(variable);
                         listCountry.add(country);
-                        listPercentile.add(properties.getString(0));
-                        listAge.add(Integer.parseInt(properties.getString(1)));
-                        listPop.add(properties.getString(2));
+                        listPercentile.add(properties.optString(0));
+                        listAge.add(Integer.parseInt(properties.optString(1)));
+                        listPop.add(properties.optString(2));
                     }
                 }
             }
@@ -164,6 +165,7 @@ public class WIDDownloader {
             List<Double>  listValue      = new ArrayList<Double>();
 
             JSONObject json = new JSONObject(response);
+
             Iterator<String> indicatorIter = json.keys();
             while (indicatorIter.hasNext()) {
                 String indicator = indicatorIter.next();
@@ -335,18 +337,18 @@ public class WIDDownloader {
                 JSONArray unitJSON  = indicatorData.getJSONObject(4).getJSONArray("units");
                 JSONObject notesJSON = indicatorData.getJSONObject(5).getJSONArray("notes").getJSONObject(0);
 
-                String shortName = nameJSON.getString("shortname");
-                String simpleDes = nameJSON.getString("simpledes");
-                String technicalDes = nameJSON.getString("technicaldes");
+                String shortName = nameJSON.optString("shortname");
+                String simpleDes = nameJSON.optString("simpledes");
+                String technicalDes = nameJSON.optString("technicaldes");
 
-                String shortType = typeJSON.getString("shortdes");
-                String longType = typeJSON.getString("longdes");
+                String shortType = typeJSON.optString("shortdes");
+                String longType = typeJSON.optString("longdes");
 
-                String shortPop = popJSON.getString("shortdes");
-                String longPop = popJSON.getString("longdes");
+                String shortPop = popJSON.optString("shortdes");
+                String longPop = popJSON.optString("longdes");
 
-                String shortAge = ageJSON.getString("shortname");
-                String longAge = ageJSON.getString("fullname");
+                String shortAge = ageJSON.optString("shortname");
+                String longAge = ageJSON.optString("fullname");
 
                 String country;
                 String countryName;
@@ -363,9 +365,9 @@ public class WIDDownloader {
                 while (countryIter.hasNext()) {
                     JSONObject countryUnits = (JSONObject) countryIter.next();
 
-                    country = countryUnits.getString("country");
-                    countryName = countryUnits.getString("country_name");
-                    unit = countryUnits.getJSONObject("metadata").getString("unit");
+                    country = countryUnits.optString("country");
+                    countryName = countryUnits.optString("country_name");
+                    unit = countryUnits.getJSONObject("metadata").optString("unit");
                     unitLabel = countryUnits.getJSONObject("metadata").optString("unit_name");
 
                     // Find matching source and method, if any
@@ -373,9 +375,9 @@ public class WIDDownloader {
                         Iterator countryNotesIter = notesJSON.getJSONArray(concept).iterator();
                         while (countryNotesIter.hasNext()) {
                             JSONObject countryNotes = (JSONObject) countryNotesIter.next();
-                            if (countryNotes.getString("alpha2").equals(country)) {
-                                source = countryNotes.getString("source");
-                                method = countryNotes.getString("method");
+                            if (countryNotes.optString("alpha2").equals(country)) {
+                                source = countryNotes.optString("source");
+                                method = countryNotes.optString("method");
                                 break;
                             }
                         }
