@@ -1,4 +1,4 @@
-*! wid_example3 v1.0.3 Thomas Blanchet 11oct2017
+*! wid_example3 v1.0.4 Thomas Blanchet 7apr2020
 
 // Plot the long run evolution of average net national income per adult
 // in US, FR, DE and GB, in log scale
@@ -34,7 +34,7 @@ program wid_example3
 			ytitle("2017 PPP USD (000')") ylabel(2 5 10 20 50 100) ///
 			title("Average net national income") subtitle("per adult") ///
 			note("Source: WID.world")
-		
+
 		restore
 	}
 end

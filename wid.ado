@@ -1,4 +1,4 @@
-*! wid v1.0.3 Thomas Blanchet 11oct2017
+*! wid v1.0.4 Thomas Blanchet 7apr2020
 
 program wid
 	version 13
@@ -51,19 +51,36 @@ program wid
 	
 	display as text "* Get variables associated to your selection...",, _continue
 	
+	tempfile allvars
 	clear
-	javacall com.wid.WIDDownloader importCountriesAvailableVariables, args("`areas'")
+	quietly save "`allvars'", emptyok
+	
+	foreach sixlet in `indicators' {
+		clear
+		if regexm("`sixlet'", "^[a-z][a-z][a-z][a-z][a-z][a-z]$") {
+			clear
+			javacall com.wid.WIDDownloader importCountriesAvailableVariables, args("`areas'" "`sixlet'")
+		}
+		else if ("`sixlet'" == "_all") {
+			clear
+			javacall com.wid.WIDDownloader importCountriesAvailableVariables, args("`areas'" "all")
+		}
+		else {
+			display as error "`name' is not a valid six letter code"
+			exit 198
+		}
+		quietly append using "`allvars'"
+		quietly save "`allvars'", replace
+	}
 	
 	// Check if there are some results
+	quietly use "`allvars'"
 	quietly count
 	if (r(N) == 0) {
 		display as text "DONE"
 		display as text "(no data matching your selection)"
 		exit 0
 	}
-	
-	tempfile allvars
-	quietly save "`allvars'"
 	
 	// ---------------------------------------------------------------------- //
 	// Only keep variables that the user asked for
@@ -230,31 +247,47 @@ program wid
 	// Retrieve the data from the API
 	// ---------------------------------------------------------------------- //
 	
-	display as text "* Download the data...",, _continue
+	display as text "* Downloading the data",, _continue
 	
 	// Generate the variable names to be used in the API
 	quietly generate data_code = variable + "_" + percentile + "_" + string(age) + "_" + pop
 	
-	// Divide the data in smaller chunks before making the request
-	quietly generate chunk = round(_n/50)
+	// Divide the data in smaller chunks before making the request: group by
+	// variable and percentiles
+	sort variable percentile age pop country
+	quietly egen grp = group(variable percentile age pop)
+	quietly generate chunk = round(grp/10)
+	quietly drop grp
+	
 	tempfile codes output_data
 	quietly save "`codes'"
+		
+	display ""
+	display "{c LT} 0% {hline 3}{c +}{hline 3} 20% {hline 3}{c +}{hline 3} 40% {hline 3}{c +}{hline 3} 60% {hline 3}{c +}{hline 3} 80% {hline 3}{c +}{hline 3} 100% {c RT}" in smcl
 	
+	quietly tabulate chunk
+	local nchunks = r(r)
 	quietly levelsof chunk, local(chunk_list)
+	local progress = 1
 	foreach c of local chunk_list {
 		quietly use "`codes'"
 		quietly levelsof data_code if (chunk == `c'), separate(",") local(variables_list) clean
 		quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 		
-		clear
 		javacall com.wid.WIDDownloader importCountriesVariables, args("`areas_list'" "`variables_list'" "`years'")
+		quietly drop if missing(value)
 		
 		if (`c' != 0) {
 			quietly append using "`output_data'"
 		}
 		quietly save "`output_data'", replace
+		
+		if (`c'/`nchunks'*68 > `progress') {
+			di "=",, _continue
+			local progress = `progress' + 1
+		}
 	}
-	display as text "DONE"
+	display ""
 	
 	if ("`list_years'" != "") {
 		quietly merge n:1 year using "`list_years'", nogenerate keep(match)
@@ -312,7 +345,7 @@ program wid
 			local first 0
 			quietly save "`output_metadata'", replace
 		}
-		
+				
 		quietly count
 		if (r(N) > 0) {
 			display as text "DONE"
@@ -332,6 +365,8 @@ program wid
 		
 		order country variable percentile year value
 	}
+	
+	drop chunk data_code
 	
 	// Saves memory
 	quietly compress

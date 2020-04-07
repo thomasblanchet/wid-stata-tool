@@ -1,4 +1,4 @@
-*! wid_example1 v1.0.3 Thomas Blanchet 11oct2017
+*! wid_example1 v1.0.4 Thomas Blanchet 7apr2020
 
 // Plot the evolution of the pre-tax national income of the bottom 50% of the
 // population in China, France and the United States since 1978 (in log scale)
@@ -8,7 +8,7 @@ program wid_example2
 
 	quietly {
 		preserve
-		
+
 		// Download and store the 2017 USD PPP exchange rate
 		wid, indicators(xlcusp) areas(FR US CN) year(2017) clear
 		rename value ppp
@@ -32,7 +32,7 @@ program wid_example2
 			ytitle("2017 PPP USD (000')") ///
 			title("Average pre-tax national income of the bottom 50%") subtitle("equal-split adults") ///
 			note("Source: WID.world") legend(rows(1))
-			
+
 		restore
 	}
 end

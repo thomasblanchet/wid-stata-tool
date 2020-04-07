@@ -18,12 +18,16 @@ public class WIDDownloader {
     public static int importCountriesAvailableVariables(String[] args) {
         // Retrieve the arguments of the query
         String countries = args[0];
+        String sixlet = args[1];
 
         // Create the query
         String query;
         try {
             String charset = java.nio.charset.StandardCharsets.UTF_8.name();
-            query = String.format("countries=%s&variables=all", URLEncoder.encode(countries, charset));
+            query = String.format("countries=%s&variables=%s",
+                URLEncoder.encode(countries, charset),
+                URLEncoder.encode(sixlet, charset)
+            );
         } catch (Exception e) {
             SFIToolkit.error("\nthe 'areas' argument contains invalid characters\n");
             return(198);
@@ -60,7 +64,14 @@ public class WIDDownloader {
             List<Integer> listAge        = new ArrayList<Integer>();
             List<String>  listPop        = new ArrayList<String>();
 
-            JSONObject json = new JSONObject(response);
+            // Correction for cases where an array is returned
+            JSONObject json;
+            try {
+                json = new JSONObject(response);
+            } catch (JSONException e) {
+                JSONArray jsonArray = new JSONArray(response);
+                json = jsonArray.getJSONObject(0);
+            }
 
             Iterator<String> variableIter = json.keys();
             while (variableIter.hasNext()) {
@@ -108,6 +119,8 @@ public class WIDDownloader {
             }
         } catch (Exception e) {
             SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
+            SFIToolkit.error(e.toString());
+            SFIToolkit.error("\n");
             return(674);
         }
 
@@ -224,8 +237,9 @@ public class WIDDownloader {
                 Data.storeNum(variableValueIndex,      i + 1, listValue.get(i));
             }
         } catch (Exception e) {
-            SFIToolkit.error(e.toString());
             SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
+            SFIToolkit.error(e.toString());
+            SFIToolkit.error("\n");
             return(674);
         }
 
@@ -269,6 +283,8 @@ public class WIDDownloader {
             scanner.close();
         } catch (Exception e) {
             SFIToolkit.error("\ncould not access the online WID.world database; please check your internet connection\n");
+            SFIToolkit.error(e.toString());
+            SFIToolkit.error("\n");
             return(677);
         }
 
@@ -538,6 +554,8 @@ public class WIDDownloader {
             }
         } catch (Exception e) {
             SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.com\n");
+            SFIToolkit.error(e.toString());
+            SFIToolkit.error("\n");
             return(674);
         }
 
