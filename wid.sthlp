@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.0.2  20jun2017}{...}
+{* *! version 1.0.4  7apr2020}{...}
 {title:Title}
 
 {phang}
@@ -133,8 +133,10 @@ Some of the most common possibilities include:
 Data is presented in long format (one observation per value).
 
 {pstd}
-All monetary amounts are in constant 2017 local currency for countries and country subregions.
-Monetary amounts for world regions are in 2017 EUR PPP.
+All monetary amounts are in local currency at constant prices for countries and country subregions.
+Monetary amounts for world regions are in EUR PPP.
+Series are at last year's prices, the database being usually updated every year in the summer.
+To check the year of reference, look at when the price index {it:inyixx} is equal to 1.
 You can access the price index using the indicator {it:inyixx}, the PPP exchange rates using {it:xlcusp} (USD), {it:xlceup} (EUR), {it:xlcyup} (CNY), and the market exchange rates using {it:xlcusx} (USD), {it:xlceux} (EUR), {it:xlcyux} (CNY).
 
 {pstd}
@@ -152,17 +154,17 @@ The following examples only illustrate graphing, and do not leave any data in me
 Plot wealth inequality share in France:
 
         {cmd:wid, indicators(shweal) areas(FR) perc(p90p100 p99p100) ages(992) pop(j) clear}
-    
+
         {cmd:// Reshape and plot}
         {cmd:reshape wide value, i(year) j(percentile) string}
         {cmd:label variable valuep90p100 "Top 10% share"}
         {cmd:label variable valuep99p100 "Top 1% share"}
-        
+
         {cmd:graph twoway line value* year, title("Wealth inequality in France") ///}
         {cmd:    ylabel(0.2 "20%" 0.4 "40%" 0.6 "60%" 0.8 "80%") ///}
         {cmd:    subtitle("equal-split adults") ///}
         {cmd:    note("Source: WID.world")}
-        
+
         {it:({stata wid_example1:click to run})}
 
 {pstd}
@@ -173,25 +175,25 @@ Plot the evolution of the pre-tax national income of the bottom 50% of the popul
         {cmd:rename value ppp}
         {cmd:tempfile ppp}
         {cmd:save "`ppp'"}
-        
+
         {cmd:wid, indicators(aptinc) areas(FR US CN) perc(p0p50) year(1978/2017) ages(992) pop(j) clear}
         {cmd:merge n:1 country using "`ppp'", nogenerate}
-        
+
         {cmd:// Convert to 2017 USD PPP (thousands)}
         {cmd:replace value = value/ppp/1000}
-        
+
         {cmd:// Reshape and plot}
         {cmd:keep country year value}
         {cmd:reshape wide value, i(year) j(country) string}
         {cmd:label variable valueFR "France"}
         {cmd:label variable valueUS "United States"}
         {cmd:label variable valueCN "China"}
-        
+
         {cmd:graph twoway line value* year, yscale(log) ylabel(1 2 5 10 20) ///}
         {cmd:    ytitle("2017 PPP USD (000's)") ///}
         {cmd:    title("Average pre-tax national income of the bottom 50%") subtitle("equal-split adults") ///}
         {cmd:    note("Source: WID.world") legend(rows(1))}
-        
+
         {it:({stata wid_example2:click to run})}
 
 {pstd}
@@ -202,14 +204,14 @@ Plot the long-run evolution of average net national income per adult in France, 
         {cmd:rename value ppp}
         {cmd:tempfile ppp}
         {cmd:save "`ppp'"}
-        
+
         {cmd:// Download net national income in constant 2017 local currency}
         {cmd:wid, indicators(anninc) areas(FR US DE GB) age(992) clear}
         {cmd:merge n:1 country using "`ppp'", nogenerate}
-        
+
         {cmd:// Convert to 2017 USD PPP (thousands)}
         {cmd:replace value = value/ppp/1000}
-        
+
         {cmd:// Reshape and plot}
         {cmd:keep country year value}
         {cmd:reshape wide value, i(year) j(country) string}
@@ -217,7 +219,7 @@ Plot the long-run evolution of average net national income per adult in France, 
         {cmd:label variable valueUS "United States"}
         {cmd:label variable valueDE "Germany"}
         {cmd:label variable valueGB "United Kingdom"}
-        
+
         {cmd:graph twoway line value* year, yscale(log) ///}
         {cmd:    ytitle("2017 PPP USD (000's)") ylabel(2 5 10 20 50 100) ///}
         {cmd:    title("Average net national income") subtitle("per adult") ///}
