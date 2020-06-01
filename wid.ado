@@ -144,14 +144,14 @@ program wid
 	if !inlist("`ages'", "", "_all") {
 		local n: word count `ages'
 		quietly set obs `n'
-		quietly generate age = .
+		quietly generate age = ""
 		forvalues i = 1/`n' {
 			local a: word `i' of `ages'
 			if !regexm("`a'", "^[0-9][0-9][0-9]$") {
 				display as error "`a' is not a valid age code"
 				exit 198
 			}
-			quietly replace age = `a' in `i'
+			quietly replace age = "`a'" in `i'
 		}
 		quietly duplicates drop
 		tempfile list_ages
