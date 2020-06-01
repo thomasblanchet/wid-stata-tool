@@ -250,8 +250,8 @@ program wid
 	display as text "* Downloading the data",, _continue
 	
 	// Generate the variable names to be used in the API
-	quietly generate data_code = variable + "_" + percentile + "_" + string(age) + "_" + pop
-	
+	quietly generate data_code = variable + "_" + percentile + "_" + age + "_" + pop
+		
 	// Divide the data in smaller chunks before making the request: group by
 	// variable and percentiles
 	sort variable percentile age pop country
@@ -274,6 +274,7 @@ program wid
 		quietly levelsof data_code if (chunk == `c'), separate(",") local(variables_list) clean
 		quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 		
+		clear
 		javacall com.wid.WIDDownloader importCountriesVariables, args("`areas_list'" "`variables_list'" "`years'")
 		quietly drop if missing(value)
 		
@@ -282,7 +283,7 @@ program wid
 		}
 		quietly save "`output_data'", replace
 		
-		if (`c'/`nchunks'*68 > `progress') {
+		while (`c'/`nchunks'*68 > `progress') {
 			di "=",, _continue
 			local progress = `progress' + 1
 		}
@@ -298,9 +299,9 @@ program wid
 		display as text "(no data matching you selection)"
 		exit 0
 	}
-		
+	
 	quietly duplicates drop country variable age pop percentile year, force
-	quietly replace variable = variable + string(age) + pop
+	quietly replace variable = variable + age + pop
 	order country variable percentile year value
 	quietly save "`output_data'", replace
 	
@@ -350,7 +351,7 @@ program wid
 		if (r(N) > 0) {
 			display as text "DONE"
 		
-			quietly replace variable = variable + string(age) + pop
+			quietly replace variable = variable + age + pop
 			quietly duplicates drop variable country, force
 			
 			quietly save "`output_metadata'", replace
@@ -365,8 +366,6 @@ program wid
 		
 		order country variable percentile year value
 	}
-	
-	drop chunk data_code
 	
 	// Saves memory
 	quietly compress

@@ -58,11 +58,11 @@ public class WIDDownloader {
 
         // Parse the results
         try {
-            List<String>  listVariable   = new ArrayList<String>();
-            List<String>  listCountry    = new ArrayList<String>();
-            List<String>  listPercentile = new ArrayList<String>();
-            List<Integer> listAge        = new ArrayList<Integer>();
-            List<String>  listPop        = new ArrayList<String>();
+            List<String> listVariable   = new ArrayList<String>();
+            List<String> listCountry    = new ArrayList<String>();
+            List<String> listPercentile = new ArrayList<String>();
+            List<String> listAge        = new ArrayList<String>();
+            List<String> listPop        = new ArrayList<String>();
 
             // Correction for cases where an array is returned
             JSONObject json;
@@ -88,7 +88,7 @@ public class WIDDownloader {
                         listVariable.add(variable);
                         listCountry.add(country);
                         listPercentile.add(properties.optString(0));
-                        listAge.add(Integer.parseInt(properties.optString(1)));
+                        listAge.add(properties.optString(1));
                         listPop.add(properties.optString(2));
                     }
                 }
@@ -98,7 +98,7 @@ public class WIDDownloader {
             Data.addVarStr("variable", 6);
             Data.addVarStr("country", 5);
             Data.addVarStr("percentile", 14);
-            Data.addVarInt("age");
+            Data.addVarStr("age", 3);
             Data.addVarStr("pop", 1);
 
             int obsCount = listVariable.size();
@@ -114,7 +114,7 @@ public class WIDDownloader {
                 Data.storeStr(variableVariableIndex,   i + 1, listVariable.get(i));
                 Data.storeStr(variableCountryIndex,    i + 1, listCountry.get(i));
                 Data.storeStr(variablePercentileIndex, i + 1, listPercentile.get(i));
-                Data.storeNum(variableAgeIndex,        i + 1, listAge.get(i));
+                Data.storeStr(variableAgeIndex,        i + 1, listAge.get(i));
                 Data.storeStr(variablePopIndex,        i + 1, listPop.get(i));
             }
         } catch (Exception e) {
@@ -172,7 +172,7 @@ public class WIDDownloader {
             List<String>  listCountry    = new ArrayList<String>();
             List<String>  listVariable   = new ArrayList<String>();
             List<String>  listPercentile = new ArrayList<String>();
-            List<Integer> listAge        = new ArrayList<Integer>();
+            List<String>  listAge        = new ArrayList<String>();
             List<String>  listPop        = new ArrayList<String>();
             List<Integer> listYear       = new ArrayList<Integer>();
             List<Double>  listValue      = new ArrayList<Double>();
@@ -199,7 +199,7 @@ public class WIDDownloader {
                         listCountry.add(country);
                         listVariable.add(parts[0]);
                         listPercentile.add(parts[1]);
-                        listAge.add(Integer.parseInt(parts[2]));
+                        listAge.add(parts[2]);
                         listPop.add(parts[3]);
                         listYear.add(value.getInt("y"));
                         listValue.add(value.getDouble("v"));
@@ -211,7 +211,7 @@ public class WIDDownloader {
             Data.addVarStr("variable", 6);
             Data.addVarStr("country", 5);
             Data.addVarStr("percentile", 14);
-            Data.addVarInt("age");
+            Data.addVarStr("age", 3);
             Data.addVarStr("pop", 1);
             Data.addVarInt("year");
             Data.addVarDouble("value");
@@ -231,7 +231,7 @@ public class WIDDownloader {
                 Data.storeStr(variableCountryIndex,    i + 1, listCountry.get(i));
                 Data.storeStr(variableVariableIndex,   i + 1, listVariable.get(i));
                 Data.storeStr(variablePercentileIndex, i + 1, listPercentile.get(i));
-                Data.storeNum(variableAgeIndex,        i + 1, listAge.get(i));
+                Data.storeStr(variableAgeIndex,        i + 1, listAge.get(i));
                 Data.storeStr(variablePopIndex,        i + 1, listPop.get(i));
                 Data.storeNum(variableYearIndex,       i + 1, listYear.get(i));
                 Data.storeNum(variableValueIndex,      i + 1, listValue.get(i));
@@ -290,12 +290,12 @@ public class WIDDownloader {
 
         // Parse the results
         try {
-            List<String>  listVariable    = new ArrayList<String>();
-            List<String>  listCountry     = new ArrayList<String>();
-            List<String>  listCountryName = new ArrayList<String>();
-            List<String>  listPercentile  = new ArrayList<String>();
-            List<String>  listPop         = new ArrayList<String>();
-            List<Integer> listAge         = new ArrayList<Integer>();
+            List<String> listVariable    = new ArrayList<String>();
+            List<String> listCountry     = new ArrayList<String>();
+            List<String> listCountryName = new ArrayList<String>();
+            List<String> listPercentile  = new ArrayList<String>();
+            List<String> listPop         = new ArrayList<String>();
+            List<String> listAge         = new ArrayList<String>();
             int sizeCountryName = 0;
 
             List<String> listShortName    = new ArrayList<String>();
@@ -402,7 +402,7 @@ public class WIDDownloader {
                     listVariable.add(variable);
                     listPercentile.add(percentile);
                     listCountry.add(country);
-                    listAge.add(Integer.parseInt(age));
+                    listAge.add(age);
                     listPop.add(pop);
                     listCountryName.add(countryName);
                     if (countryName.length() > sizeCountryName) {
@@ -474,7 +474,7 @@ public class WIDDownloader {
             Data.addVarStr("percentile", 14);
             Data.addVarStr("country", 5);
             Data.addVarStr("countryname", sizeCountryName);
-            Data.addVarInt("age");
+            Data.addVarStr("age", 3);
             Data.addVarStr("pop", 1);
 
             Data.addVarStr("shortname", sizeShortName);
@@ -530,7 +530,7 @@ public class WIDDownloader {
                 Data.storeStr(variablePercentileIndex,  i + 1, listPercentile.get(i));
                 Data.storeStr(variableCountryIndex,     i + 1, listCountry.get(i));
                 Data.storeStr(variableCountryNameIndex, i + 1, listCountryName.get(i));
-                Data.storeNum(variableAgeIndex,         i + 1, listAge.get(i));
+                Data.storeStr(variableAgeIndex,         i + 1, listAge.get(i));
                 Data.storeStr(variablePopIndex,         i + 1, listPop.get(i));
 
                 Data.storeStr(variableShortNameIndex,    i + 1, listShortName.get(i));
