@@ -372,11 +372,11 @@ program wid
 			display as text "DONE (no metadata found for requested data)"
 		}
 		
-		replace imputation = "regional imputation"       if imputation == "region"
-		replace imputation = "adjusted surveys"          if imputation == "survey"
-		replace imputation = "surveys and tax data"      if imputation == "tax"
-		replace imputation = "surveys and tax microdata" if imputation == "full"
-		replace imputation = "rescaled fiscal income"    if imputation == "rescaling"
+		quietly replace imputation = "regional imputation"       if imputation == "region"
+		quietly replace imputation = "adjusted surveys"          if imputation == "survey"
+		quietly replace imputation = "surveys and tax data"      if imputation == "tax"
+		quietly replace imputation = "surveys and tax microdata" if imputation == "full"
+		quietly replace imputation = "rescaled fiscal income"    if imputation == "rescaling"
 
 		order country variable percentile year value
 	}

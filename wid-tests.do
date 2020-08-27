@@ -4,7 +4,8 @@
 
 clear all
 
-global root "~/GitHub/wid-stata-tool"
+*global root "~/GitHub/wid-stata-tool"
+global root "~/Dropbox/wid-package"
 
 sysdir set PERSONAL "$root"
 
