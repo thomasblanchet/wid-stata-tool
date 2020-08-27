@@ -3,7 +3,7 @@
 program wid
 	version 13
 	
-	syntax, [INDicators(string) AReas(string) Years(numlist) Perc(string) AGes(string) POPulation(string) METAdata clear]
+	syntax, [INDicators(string) AReas(string) Years(numlist) Perc(string) AGes(string) POPulation(string) METAdata EXclude clear]
 	
 	// ---------------------------------------------------------------------- //
 	// Check if there are already some data in memory
@@ -49,7 +49,8 @@ program wid
 	// Retrieve all possible variables for the area(s)
 	// ---------------------------------------------------------------------- //
 	
-	display as text "* Get variables associated to your selection...",, _continue
+	display as text ""
+	display as text "* Get variables associated to your selection...", _continue
 	
 	tempfile allvars
 	clear
@@ -242,6 +243,7 @@ program wid
 	display as text "`nb_percentile' percentile`plural_percentile',", _continue
 	display as text "`nb_age' age categor`plural_age',", _continue
 	display as text "`nb_pop' population categor`plural_pop')"
+	display as text ""
 	
 	// ---------------------------------------------------------------------- //
 	// Retrieve the data from the API
@@ -263,6 +265,7 @@ program wid
 	quietly save "`codes'"
 		
 	display ""
+	display ""
 	display "{c LT} 0% {hline 3}{c +}{hline 3} 20% {hline 3}{c +}{hline 3} 40% {hline 3}{c +}{hline 3} 60% {hline 3}{c +}{hline 3} 80% {hline 3}{c +}{hline 3} 100% {c RT}" in smcl
 	
 	quietly tabulate chunk
@@ -275,7 +278,7 @@ program wid
 		quietly levelsof country if (chunk == `c'), separate(",") local(areas_list) clean
 		
 		clear
-		javacall com.wid.WIDDownloader importCountriesVariables, args("`areas_list'" "`variables_list'" "`years'")
+		javacall com.wid.WIDDownloader importCountriesVariables, args("`areas_list'" "`variables_list'" "`exclude'")
 		quietly drop if missing(value)
 		
 		if (`c' != 0) {
@@ -288,6 +291,11 @@ program wid
 			local progress = `progress' + 1
 		}
 	}
+	while (`progress' < 68) {
+		di "=",, _continue
+		local progress = `progress' + 1
+	}
+	display ""
 	display ""
 	
 	if ("`list_years'" != "") {
@@ -310,7 +318,7 @@ program wid
 	// ---------------------------------------------------------------------- //
 	
 	if ("`metadata'" != "") {
-		display as text "* Download the metadata...",, _continue
+		display as text "* Download the metadata...", _continue
 		
 		// Only keep information required for the metadata, and divide them again
 		tempfile output_metadata
@@ -364,6 +372,12 @@ program wid
 			display as text "DONE (no metadata found for requested data)"
 		}
 		
+		replace imputation = "regional imputation"       if imputation == "region"
+		replace imputation = "adjusted surveys"          if imputation == "survey"
+		replace imputation = "surveys and tax data"      if imputation == "tax"
+		replace imputation = "surveys and tax microdata" if imputation == "full"
+		replace imputation = "rescaled fiscal income"    if imputation == "rescaling"
+
 		order country variable percentile year value
 	}
 	

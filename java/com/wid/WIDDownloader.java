@@ -2,7 +2,6 @@ package com.wid;
 
 import java.net.*;
 import java.util.*;
-import java.util.regex.*;
 import java.io.*;
 import org.json.*;
 import com.stata.sfi.*;
@@ -131,6 +130,12 @@ public class WIDDownloader {
         // Retrieve the arguments of the query
         String countries = args[0];
         String variables = args[1];
+        boolean includeExtrapolations;
+        if (args[2].equals("exclude")) {
+        	includeExtrapolations = false;
+        } else {
+        	includeExtrapolations = true;
+        }
 
         // Create the query
         String query;
@@ -188,6 +193,45 @@ public class WIDDownloader {
                     JSONObject countryData = (JSONObject) indicatorDataIter.next();
 
                     String country = JSONObject.getNames(countryData)[0];
+                    
+                    // Retrieve data on extrapolation, if required
+                    List<Integer> excludeYears = new ArrayList<Integer>();
+                    if (!includeExtrapolations) {
+						JSONObject countryMeta = countryData.getJSONObject(country).getJSONObject("meta");
+						
+						String extrapolation = countryMeta.optString("extrapolation");
+						String dataPoints = countryMeta.optString("data_points");
+						
+						if (!extrapolation.equals("")) {
+							// List of data points to be included in any case, if any
+							List<Integer> listDataPoints = new ArrayList<Integer>();
+							if (!dataPoints.equals("")) {
+								JSONArray dataPointsArray = new JSONArray(dataPoints);
+								Iterator dataPointsIterator = dataPointsArray.iterator();
+								while (dataPointsIterator.hasNext()) {
+									Integer value = (Integer) dataPointsIterator.next();
+									listDataPoints.add(value);
+								}
+							}
+							
+							// List of all the years to be excluded
+							JSONArray extrapolationArray = new JSONArray(extrapolation);
+							Iterator extrapolationArrayIter = extrapolationArray.iterator();
+							while (extrapolationArrayIter.hasNext()) {
+								JSONArray extrapolationPeriod = (JSONArray) extrapolationArrayIter.next();
+								int yearStart = extrapolationPeriod.getInt(0);
+								int yearEnd = extrapolationPeriod.getInt(1);
+								
+								for (int i = yearStart; i <= yearEnd; i++) {
+									if (!listDataPoints.contains(i)) {
+										excludeYears.add(i);
+									}
+								}
+							}
+						}
+                    }
+                    
+                    // Retrieve values
                     JSONArray countryValues = countryData.getJSONObject(country).getJSONArray("values");
 
                     Iterator countryValuesIter = countryValues.iterator();
@@ -195,14 +239,17 @@ public class WIDDownloader {
                         JSONObject value = (JSONObject) countryValuesIter.next();
 
                         String[] parts = indicator.split("_");
+                        int year = value.getInt("y");
 
-                        listCountry.add(country);
-                        listVariable.add(parts[0]);
-                        listPercentile.add(parts[1]);
-                        listAge.add(parts[2]);
-                        listPop.add(parts[3]);
-                        listYear.add(value.getInt("y"));
-                        listValue.add(value.getDouble("v"));
+						if (!excludeYears.contains(year)) {
+                        	listCountry.add(country);
+                        	listVariable.add(parts[0]);
+                        	listPercentile.add(parts[1]);
+                        	listAge.add(parts[2]);
+                        	listPop.add(parts[3]);
+                        	listYear.add(year);
+                        	listValue.add(value.getDouble("v"));
+                        }
                     }
                 }
             }
@@ -296,39 +343,44 @@ public class WIDDownloader {
             List<String> listPercentile  = new ArrayList<String>();
             List<String> listPop         = new ArrayList<String>();
             List<String> listAge         = new ArrayList<String>();
-            int sizeCountryName = 0;
+            int sizeCountryName = 1;
 
             List<String> listShortName    = new ArrayList<String>();
             List<String> listSimpleDes    = new ArrayList<String>();
             List<String> listTechnicalDes = new ArrayList<String>();
-            int sizeShortName = 0;
-            int sizeSimpleDes = 0;
-            int sizeTechnicalDes = 0;
+            int sizeShortName = 1;
+            int sizeSimpleDes = 1;
+            int sizeTechnicalDes = 1;
 
             List<String> listShortType = new ArrayList<String>();
             List<String> listLongType  = new ArrayList<String>();
-            int sizeShortType = 0;
-            int sizeLongType = 0;
+            int sizeShortType = 1;
+            int sizeLongType = 1;
 
             List<String> listShortPop = new ArrayList<String>();
             List<String> listLongPop  = new ArrayList<String>();
-            int sizeShortPop = 0;
-            int sizeLongPop = 0;
+            int sizeShortPop = 1;
+            int sizeLongPop = 1;
 
             List<String> listShortAge = new ArrayList<String>();
             List<String> listLongAge  = new ArrayList<String>();
-            int sizeShortAge = 0;
-            int sizeLongAge = 0;
+            int sizeShortAge = 1;
+            int sizeLongAge = 1;
 
             List<String> listUnit      = new ArrayList<String>();
             List<String> listUnitLabel = new ArrayList<String>();
-            int sizeUnit = 0;
-            int sizeUnitLabel = 0;
+            int sizeUnit = 1;
+            int sizeUnitLabel = 1;
 
             List<String> listSource = new ArrayList<String>();
             List<String> listMethod = new ArrayList<String>();
-            int sizeSource = 0;
-            int sizeMethod = 0;
+            int sizeSource = 1;
+            int sizeMethod = 1;
+            
+            List<String> listDataQuality = new ArrayList<String>();
+            List<String> listImputation = new ArrayList<String>();
+            int sizeDataQuality = 1;
+            int sizeImputation = 1;
 
             JSONArray json = new JSONArray(response).getJSONObject(0).getJSONArray("metadata_func");
 
@@ -344,13 +396,13 @@ public class WIDDownloader {
                 String percentile = parts[1];
                 String age = parts[2];
                 String pop = parts[3];
-                String concept = variable.substring(2, 6);
+                String concept = variable.substring(1, 6);
 
-                JSONObject nameJSON = indicatorData.getJSONObject(0).getJSONObject("name");
-                JSONObject typeJSON = indicatorData.getJSONObject(1).getJSONObject("type");
-                JSONObject popJSON  = indicatorData.getJSONObject(2).getJSONObject("pop");
-                JSONObject ageJSON  = indicatorData.getJSONObject(3).getJSONObject("age");
-                JSONArray unitJSON  = indicatorData.getJSONObject(4).getJSONArray("units");
+                JSONObject nameJSON  = indicatorData.getJSONObject(0).getJSONObject("name");
+                JSONObject typeJSON  = indicatorData.getJSONObject(1).getJSONObject("type");
+                JSONObject popJSON   = indicatorData.getJSONObject(2).getJSONObject("pop");
+                JSONObject ageJSON   = indicatorData.getJSONObject(3).getJSONObject("age");
+                JSONArray unitJSON   = indicatorData.getJSONObject(4).getJSONArray("units");
                 JSONObject notesJSON = indicatorData.getJSONObject(5).getJSONArray("notes").getJSONObject(0);
 
                 String shortName = nameJSON.optString("shortname");
@@ -374,6 +426,9 @@ public class WIDDownloader {
 
                 String source = "";
                 String method = "";
+                
+                String dataQuality = "";
+                String imputation = "";
 
                 // The item "unit" (5th position) is always filled, so we use it to
                 // loop over the different countries
@@ -385,7 +440,7 @@ public class WIDDownloader {
                     countryName = countryUnits.optString("country_name");
                     unit = countryUnits.getJSONObject("metadata").optString("unit");
                     unitLabel = countryUnits.getJSONObject("metadata").optString("unit_name");
-
+                    
                     // Find matching source and method, if any
                     if (!notesJSON.isNull(concept)) {
                         Iterator countryNotesIter = notesJSON.getJSONArray(concept).iterator();
@@ -394,6 +449,10 @@ public class WIDDownloader {
                             if (countryNotes.optString("alpha2").equals(country)) {
                                 source = countryNotes.optString("source");
                                 method = countryNotes.optString("method");
+                                
+                                dataQuality = countryNotes.optString("data_quality");
+                                imputation = countryNotes.optString("imputation");
+                                
                                 break;
                             }
                         }
@@ -404,6 +463,7 @@ public class WIDDownloader {
                     listCountry.add(country);
                     listAge.add(age);
                     listPop.add(pop);
+                    
                     listCountryName.add(countryName);
                     if (countryName.length() > sizeCountryName) {
                         sizeCountryName = countryName.length();
@@ -466,6 +526,15 @@ public class WIDDownloader {
                     if (method.length() > sizeMethod) {
                         sizeMethod = method.length();
                     }
+
+                    listDataQuality.add(dataQuality);
+                    if (dataQuality.length() > sizeDataQuality) {
+                    	sizeDataQuality = dataQuality.length();
+                    }
+                    listImputation.add(imputation);
+                    if (imputation.length() > sizeImputation) {
+                    	sizeImputation = imputation.length();
+                    }
                 }
             }
 
@@ -495,6 +564,9 @@ public class WIDDownloader {
 
             Data.addVarStr("source", sizeSource);
             Data.addVarStr("method", sizeMethod);
+            
+            Data.addVarStr("data_quality", sizeDataQuality);
+            Data.addVarStr("imputation", sizeImputation);
 
             int obsCount = listVariable.size();
             Data.setObsCount(obsCount);
@@ -524,6 +596,9 @@ public class WIDDownloader {
 
             int variableSourceIndex = Data.getVarIndex("source");
             int variableMethodIndex = Data.getVarIndex("method");
+            
+            int variableDataQuality = Data.getVarIndex("data_quality");
+            int variableImputation  = Data.getVarIndex("imputation");
 
             for (int i = 0; i < obsCount; i++) {
                 Data.storeStr(variableVariableIndex,    i + 1, listVariable.get(i));
@@ -551,6 +626,9 @@ public class WIDDownloader {
 
                 Data.storeStr(variableSourceIndex, i + 1, listSource.get(i));
                 Data.storeStr(variableMethodIndex, i + 1, listMethod.get(i));
+                
+                Data.storeStr(variableDataQuality, i + 1, listDataQuality.get(i));
+                Data.storeStr(variableImputation,  i + 1, listImputation.get(i));
             }
         } catch (Exception e) {
             SFIToolkit.error("\nserver response invalid; if the problem persists, please file bug report to thomas.blanchet@wid.world\n");

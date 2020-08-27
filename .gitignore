@@ -29,3 +29,9 @@ api-key.txt
 java/com/stata
 
 example.do
+
+.DS_Store
+.idea/libraries/json_20200518.xml
+.idea/misc.xml
+.idea/vcs.xml
+test.do
