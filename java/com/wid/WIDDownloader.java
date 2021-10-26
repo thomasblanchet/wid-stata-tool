@@ -248,7 +248,7 @@ public class WIDDownloader {
                         	listAge.add(parts[2]);
                         	listPop.add(parts[3]);
                         	listYear.add(year);
-                        	listValue.add(value.getDouble("v"));
+                        	listValue.add(value.optDouble("v"));
                         }
                     }
                 }
