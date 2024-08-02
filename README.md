@@ -9,7 +9,7 @@
 
 > [!WARNING]
 > 
-> I have serious concerns regarding the reliability and the integrity of the data this package accesses.
+> I have serious concerns regarding the validity and the integrity of the data this package accesses.
 > I advise users to exercise extreme caution and skepticism when using this tool, and I recommend seeking alternative sources for accuracy and reliability.
 
 # WID.world Stata command
