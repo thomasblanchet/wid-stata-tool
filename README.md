@@ -14,7 +14,7 @@
 
 # WID.world Stata command
 
-This is the official Stata command of the World Inequality Database (WID.world). It lets users download data directly from WID.world into Stata.
+This is the ~official~ **[note: I am no longer affiliated with the World Inequality Lab and cannot offer any guarantee that the command will remain functional in the future]** Stata command of the World Inequality Database (WID.world). It lets users download data directly from WID.world into Stata.
 
 ## Installation
 
